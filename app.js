@@ -203,3 +203,31 @@ fields.forEach(id => {
 (async () => {
   await fetchEmployees();
 })();
+// ─── Export to Excel ──────────────────────────────────────
+async function exportToExcel() {
+  const { data, error } = await window.supabaseClient
+    .from(TABLE_NAME)
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error || !data.length) {
+    showToast('لا توجد بيانات للتصدير!');
+    return;
+  }
+
+  const rows = data.map((r, i) => ({
+    '#': i + 1,
+    'الاسم الكامل': r.full_name,
+    'البريد الإلكتروني': r.email,
+    'رقم الهاتف': r.phone,
+    'القسم': r.department,
+    'المسمى الوظيفي': r.job_title,
+    'تاريخ التسجيل': formatDate(r.created_at),
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'الموظفون');
+  XLSX.writeFile(wb, 'employees.xlsx');
+  showToast('تم تصدير البيانات بنجاح! ✅');
+}
