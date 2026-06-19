@@ -204,7 +204,7 @@ fields.forEach(id => {
   await fetchEmployees();
 })();
 
-// ─── Export to Excel (XML مع تنسيق كامل) ─────────────────
+// ─── Export to Excel (HTML Table → xlsx منسق) ─────────────
 async function exportToExcel() {
   const { data, error } = await window.supabaseClient
     .from(TABLE_NAME)
@@ -217,92 +217,45 @@ async function exportToExcel() {
   }
 
   const headers = ['#', 'الاسم الكامل', 'البريد الإلكتروني', 'رقم الهاتف', 'القسم', 'المسمى الوظيفي', 'تاريخ التسجيل'];
-  const colWidths = [40, 150, 180, 110, 130, 150, 110];
-
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-  // صف الهيدر
-  const headerRow = headers.map(h =>
-    `<Cell ss:StyleID="header"><Data ss:Type="String">${esc(h)}</Data></Cell>`
+  const headerCells = headers.map(h =>
+    `<th style="background-color:#1E3A5F;color:#FFFFFF;font-weight:bold;font-size:12px;
+      text-align:center;padding:8px;border:1px solid #FFFFFF;white-space:nowrap;">${esc(h)}</th>`
   ).join('');
 
-  // صفوف البيانات
   const dataRows = data.map((r, i) => {
-    const isEven = i % 2 === 0;
-    const style  = isEven ? 'rowEven' : 'rowOdd';
-    const cells = [
-      i + 1,
-      r.full_name,
-      r.email,
-      r.phone,
-      r.department,
-      r.job_title,
-      formatDate(r.created_at),
-    ].map((val, ci) =>
-      `<Cell ss:StyleID="${ci === 0 ? 'center' : style}"><Data ss:Type="${ci === 0 ? 'Number' : 'String'}">${esc(val)}</Data></Cell>`
+    const bg = i % 2 === 0 ? '#F7F9FC' : '#FFFFFF';
+    const vals = [i+1, r.full_name, r.email, r.phone, r.department, r.job_title, formatDate(r.created_at)];
+    const cells = vals.map((v, ci) =>
+      `<td style="background-color:${ci===0?'#EEF2F7':bg};padding:6px 10px;
+        border:1px solid #D4E0EF;text-align:${ci===0?'center':'right'};
+        font-size:11px;white-space:nowrap;">${esc(v)}</td>`
     ).join('');
-    return `<Row ss:Height="22">${cells}</Row>`;
-  }).join('\n');
+    return `<tr>${cells}</tr>`;
+  }).join('');
 
-  // عرض الأعمدة
-  const colDefs = colWidths.map(w => `<Column ss:Width="${w}"/>`).join('');
+  const html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:x="urn:schemas-microsoft-com:office:excel"
+          xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta charset="UTF-8">
+      <!--[if gte mso 9]>
+      <xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+        <x:Name>الموظفون</x:Name>
+        <x:WorksheetOptions><x:DisplayRightToLeft/></x:WorksheetOptions>
+      </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml>
+      <![endif]-->
+    </head>
+    <body>
+      <table style="border-collapse:collapse;font-family:Arial,sans-serif;direction:rtl;">
+        <thead><tr>${headerCells}</tr></thead>
+        <tbody>${dataRows}</tbody>
+      </table>
+    </body></html>`;
 
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<?mso-application progid="Excel.Sheet"?>
-<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
-  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
-  xmlns:x="urn:schemas-microsoft-com:office:excel">
-  <Styles>
-    <Style ss:ID="header">
-      <Font ss:Bold="1" ss:Color="#FFFFFF" ss:Size="11" ss:FontName="Cairo"/>
-      <Interior ss:Color="#1E3A5F" ss:Pattern="Solid"/>
-      <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
-      <Borders>
-        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFFFF"/>
-        <Border ss:Position="Right"  ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFFFF"/>
-      </Borders>
-    </Style>
-    <Style ss:ID="rowEven">
-      <Font ss:FontName="Cairo" ss:Size="10"/>
-      <Interior ss:Color="#F7F9FC" ss:Pattern="Solid"/>
-      <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
-      <Borders>
-        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
-        <Border ss:Position="Right"  ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
-      </Borders>
-    </Style>
-    <Style ss:ID="rowOdd">
-      <Font ss:FontName="Cairo" ss:Size="10"/>
-      <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
-      <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
-      <Borders>
-        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
-        <Border ss:Position="Right"  ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
-      </Borders>
-    </Style>
-    <Style ss:ID="center">
-      <Font ss:FontName="Cairo" ss:Size="10" ss:Bold="1"/>
-      <Interior ss:Color="#EEF2F7" ss:Pattern="Solid"/>
-      <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
-      <Borders>
-        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
-        <Border ss:Position="Right"  ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
-      </Borders>
-    </Style>
-  </Styles>
-  <Worksheet ss:Name="الموظفون">
-    <Table>
-      ${colDefs}
-      <Row ss:Height="28">${headerRow}</Row>
-      ${dataRows}
-    </Table>
-    <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
-      <DisplayRightToLeft/>
-    </WorksheetOptions>
-  </Worksheet>
-</Workbook>`;
-
-  const blob = new Blob(['\uFEFF' + xml], { type: 'application/vnd.ms-excel;charset=utf-8' });
+  const blob = new Blob(['\uFEFF' + html], { type: 'application/vnd.ms-excel;charset=utf-8' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
