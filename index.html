@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نظام تسجيل الموظفين</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+
+  <main class="container">
+
+    <header class="site-header">
+      <div class="logo-mark">
+        <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+          <rect width="38" height="38" rx="10" fill="#C9A84C"/>
+          <path d="M19 8C13.48 8 9 12.48 9 18s4.48 10 10 10 10-4.48 10-10S24.52 8 19 8zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="#1E3A5F"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <h1>نظام تسجيل الموظفين</h1>
+        <p class="subtitle">أدخل بيانات الموظف لحفظها في قاعدة البيانات</p>
+      </div>
+    </header>
+
+    <section class="card form-card">
+      <div class="card-header">
+        <span class="card-badge">تسجيل جديد</span>
+        <h2>بيانات الموظف</h2>
+      </div>
+
+      <form id="employeeForm" novalidate>
+        <div class="form-grid">
+
+          <div class="field">
+            <label for="fullName">الاسم الكامل <span class="required">*</span></label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+              <input type="text" id="fullName" name="fullName" placeholder="محمد أحمد العلي" required />
+            </div>
+            <span class="field-error" id="fullName-error"></span>
+          </div>
+
+          <div class="field">
+            <label for="email">البريد الإلكتروني <span class="required">*</span></label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <input type="email" id="email" name="email" placeholder="mohammed@company.com" required />
+            </div>
+            <span class="field-error" id="email-error"></span>
+          </div>
+
+          <div class="field">
+            <label for="phone">رقم الهاتف <span class="required">*</span></label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+              <input type="tel" id="phone" name="phone" placeholder="+966 5X XXX XXXX" required />
+            </div>
+            <span class="field-error" id="phone-error"></span>
+          </div>
+
+          <div class="field">
+            <label for="department">القسم <span class="required">*</span></label>
+            <div class="input-wrap select-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+              <select id="department" name="department" required>
+                <option value="" disabled selected>اختر القسم</option>
+                <option value="تقنية المعلومات">تقنية المعلومات</option>
+                <option value="الموارد البشرية">الموارد البشرية</option>
+                <option value="المالية والمحاسبة">المالية والمحاسبة</option>
+                <option value="التسويق">التسويق</option>
+                <option value="المبيعات">المبيعات</option>
+                <option value="العمليات">العمليات</option>
+                <option value="خدمة العملاء">خدمة العملاء</option>
+              </select>
+              <svg class="select-arrow" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+            </div>
+            <span class="field-error" id="department-error"></span>
+          </div>
+
+          <div class="field field-full">
+            <label for="jobTitle">المسمى الوظيفي <span class="required">*</span></label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.86.18-1.3C18 2.1 15.9 0 13.3 0c-1.4 0-2.6.6-3.4 1.5L9 3 8.1 1.6C7.3.6 6.1 0 4.7 0 2.1 0 0 2.1 0 4.7c0 .44.11.86.18 1.3H0v2h20V6zM4.7 4c-.72 0-1.3-.58-1.3-1.3 0-.72.58-1.3 1.3-1.3.41 0 .77.19 1.01.5L7 3.4C6.53 3.8 5.67 4 4.7 4zm8.6 0c-.97 0-1.83-.2-2.3-.6l1.29-1.2c.24-.31.6-.5 1.01-.5.72 0 1.3.58 1.3 1.3 0 .72-.58 1.3-1.3 1.3zM2 8v14h8v-5h4v5h8V8H2z"/></svg>
+              <input type="text" id="jobTitle" name="jobTitle" placeholder="مهندس برمجيات أول" required />
+            </div>
+            <span class="field-error" id="jobTitle-error"></span>
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+          <button type="reset" class="btn btn-secondary" id="resetBtn">مسح البيانات</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            <span class="btn-text">حفظ الموظف</span>
+            <svg class="btn-icon" viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+          </button>
+        </div>
+
+        <div id="formStatus" class="form-status hidden"></div>
+      </form>
+    </section>
+
+    <section class="card table-card">
+      <div class="card-header">
+        <span class="card-badge card-badge-alt">السجلات</span>
+        <h2>الموظفون المسجلون</h2>
+        <span class="record-count" id="recordCount">0 موظف</span>
+      </div>
+      <div class="table-wrap">
+        <table id="employeesTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>الاسم</th>
+              <th>البريد</th>
+              <th>الهاتف</th>
+              <th>القسم</th>
+              <th>المسمى الوظيفي</th>
+              <th>تاريخ التسجيل</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr class="empty-row">
+              <td colspan="7">
+                <div class="empty-state">
+                  <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                  <p>لا توجد سجلات بعد. أضف أول موظف!</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>مدعوم بـ <strong>Supabase</strong> · مستضاف على <strong>Netlify</strong></p>
+  </footer>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast hidden">
+    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+    <span id="toastMsg"></span>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
