@@ -420,3 +420,16 @@ tbody td:first-child { color: var(--muted); font-weight: 700; font-size: .75rem;
   .form-actions { flex-direction: column-reverse; }
   .btn { justify-content: center; }
 }
+.btn-export {
+  margin-right: auto;
+  background: #1D6F42;
+  color: white;
+  font-size: .8rem;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+}
+.btn-export:hover { background: #155233; }
