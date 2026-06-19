@@ -12,7 +12,7 @@
 //  └──────────────────────────────────────────────────────────┘
 // ============================================================
 
-const SUPABASE_URL  = 'https://Ygllhnrymegymtryjffey.supabase.co';   // ← ضع رابط مشروعك هنا
+const SUPABASE_URL  = 'https://gllhnrymegymtryjffey.supabase.co';   // ← ضع رابط مشروعك هنا
 const SUPABASE_ANON = 'sb_publishable_2yazQW4L_YfHmod9RhyCLQ_FPA24XYJ';                  // ← ضع مفتاح anon هنا
 
 // ============================================================
