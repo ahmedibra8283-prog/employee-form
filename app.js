@@ -204,7 +204,7 @@ fields.forEach(id => {
   await fetchEmployees();
 })();
 
-// ─── Export to Excel (مع تنسيق احترافي) ──────────────────
+// ─── Export to Excel (XML مع تنسيق كامل) ─────────────────
 async function exportToExcel() {
   const { data, error } = await window.supabaseClient
     .from(TABLE_NAME)
@@ -217,75 +217,97 @@ async function exportToExcel() {
   }
 
   const headers = ['#', 'الاسم الكامل', 'البريد الإلكتروني', 'رقم الهاتف', 'القسم', 'المسمى الوظيفي', 'تاريخ التسجيل'];
+  const colWidths = [40, 150, 180, 110, 130, 150, 110];
 
-  const rows = data.map((r, i) => [
-    i + 1,
-    r.full_name,
-    r.email,
-    r.phone,
-    r.department,
-    r.job_title,
-    formatDate(r.created_at),
-  ]);
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-  // إنشاء الشيت من مصفوفة
-  const wsData = [headers, ...rows];
-  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  // صف الهيدر
+  const headerRow = headers.map(h =>
+    `<Cell ss:StyleID="header"><Data ss:Type="String">${esc(h)}</Data></Cell>`
+  ).join('');
+
+  // صفوف البيانات
+  const dataRows = data.map((r, i) => {
+    const isEven = i % 2 === 0;
+    const style  = isEven ? 'rowEven' : 'rowOdd';
+    const cells = [
+      i + 1,
+      r.full_name,
+      r.email,
+      r.phone,
+      r.department,
+      r.job_title,
+      formatDate(r.created_at),
+    ].map((val, ci) =>
+      `<Cell ss:StyleID="${ci === 0 ? 'center' : style}"><Data ss:Type="${ci === 0 ? 'Number' : 'String'}">${esc(val)}</Data></Cell>`
+    ).join('');
+    return `<Row ss:Height="22">${cells}</Row>`;
+  }).join('\n');
 
   // عرض الأعمدة
-  ws['!cols'] = [
-    { wch: 5  },   // #
-    { wch: 25 },   // الاسم
-    { wch: 30 },   // البريد
-    { wch: 18 },   // الهاتف
-    { wch: 20 },   // القسم
-    { wch: 25 },   // المسمى
-    { wch: 18 },   // التاريخ
-  ];
+  const colDefs = colWidths.map(w => `<Column ss:Width="${w}"/>`).join('');
 
-  // تنسيق صف الهيدر
-  headers.forEach((_, colIdx) => {
-    const cellRef = XLSX.utils.encode_cell({ r: 0, c: colIdx });
-    if (!ws[cellRef]) return;
-    ws[cellRef].s = {
-      font:      { bold: true, color: { rgb: 'FFFFFF' }, sz: 12 },
-      fill:      { fgColor: { rgb: '1E3A5F' } },
-      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
-      border: {
-        top:    { style: 'thin', color: { rgb: 'FFFFFF' } },
-        bottom: { style: 'thin', color: { rgb: 'FFFFFF' } },
-        left:   { style: 'thin', color: { rgb: 'FFFFFF' } },
-        right:  { style: 'thin', color: { rgb: 'FFFFFF' } },
-      }
-    };
-  });
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:x="urn:schemas-microsoft-com:office:excel">
+  <Styles>
+    <Style ss:ID="header">
+      <Font ss:Bold="1" ss:Color="#FFFFFF" ss:Size="11" ss:FontName="Cairo"/>
+      <Interior ss:Color="#1E3A5F" ss:Pattern="Solid"/>
+      <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+      <Borders>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFFFF"/>
+        <Border ss:Position="Right"  ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFFFF"/>
+      </Borders>
+    </Style>
+    <Style ss:ID="rowEven">
+      <Font ss:FontName="Cairo" ss:Size="10"/>
+      <Interior ss:Color="#F7F9FC" ss:Pattern="Solid"/>
+      <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
+      <Borders>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
+        <Border ss:Position="Right"  ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
+      </Borders>
+    </Style>
+    <Style ss:ID="rowOdd">
+      <Font ss:FontName="Cairo" ss:Size="10"/>
+      <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+      <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
+      <Borders>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
+        <Border ss:Position="Right"  ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
+      </Borders>
+    </Style>
+    <Style ss:ID="center">
+      <Font ss:FontName="Cairo" ss:Size="10" ss:Bold="1"/>
+      <Interior ss:Color="#EEF2F7" ss:Pattern="Solid"/>
+      <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+      <Borders>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
+        <Border ss:Position="Right"  ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D4E0EF"/>
+      </Borders>
+    </Style>
+  </Styles>
+  <Worksheet ss:Name="الموظفون">
+    <Table>
+      ${colDefs}
+      <Row ss:Height="28">${headerRow}</Row>
+      ${dataRows}
+    </Table>
+    <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+      <DisplayRightToLeft/>
+    </WorksheetOptions>
+  </Worksheet>
+</Workbook>`;
 
-  // تنسيق صفوف البيانات
-  rows.forEach((_, rowIdx) => {
-    const isEven = rowIdx % 2 === 0;
-    headers.forEach((__, colIdx) => {
-      const cellRef = XLSX.utils.encode_cell({ r: rowIdx + 1, c: colIdx });
-      if (!ws[cellRef]) return;
-      ws[cellRef].s = {
-        fill:      { fgColor: { rgb: isEven ? 'F7F9FC' : 'FFFFFF' } },
-        alignment: { horizontal: colIdx === 0 ? 'center' : 'right', vertical: 'center' },
-        border: {
-          top:    { style: 'thin', color: { rgb: 'D4E0EF' } },
-          bottom: { style: 'thin', color: { rgb: 'D4E0EF' } },
-          left:   { style: 'thin', color: { rgb: 'D4E0EF' } },
-          right:  { style: 'thin', color: { rgb: 'D4E0EF' } },
-        }
-      };
-    });
-  });
-
-  // ارتفاع صف الهيدر
-  ws['!rows'] = [{ hpt: 28 }];
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'الموظفون');
-
-  // حفظ مع تنسيق
-  XLSX.writeFile(wb, 'employees.xlsx', { cellStyles: true });
+  const blob = new Blob(['\uFEFF' + xml], { type: 'application/vnd.ms-excel;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'employees.xls';
+  a.click();
+  URL.revokeObjectURL(url);
   showToast('تم تصدير البيانات بنجاح! ✅');
 }
