@@ -2,7 +2,7 @@
 //  app.js  —  منطق التطبيق الرئيسي
 // ============================================================
 
-const TABLE_NAME = 'employees';   // اسم جدول Supabase
+const TABLE_NAME = 'employees';
 
 // ─── مراجع DOM ────────────────────────────────────────────
 const form        = document.getElementById('employeeForm');
@@ -15,7 +15,7 @@ const toast       = document.getElementById('toast');
 const toastMsg    = document.getElementById('toastMsg');
 
 // ─── حقول النموذج ─────────────────────────────────────────
-const fields = ['fullName', 'email', 'phone', 'department', 'jobTitle'];
+const fields = ['fullName', 'email', 'phone', 'department', 'jobTitle', 'employeeCode'];
 
 // ─── Toast ────────────────────────────────────────────────
 let toastTimer;
@@ -35,19 +35,15 @@ function setStatus(msg, type) {
   formStatus.textContent = msg;
   formStatus.className = `form-status ${type}`;
   formStatus.classList.remove('hidden');
-  if (type === 'success') {
-    setTimeout(() => formStatus.classList.add('hidden'), 4000);
-  }
+  if (type === 'success') setTimeout(() => formStatus.classList.add('hidden'), 4000);
 }
-
 function clearStatus() { formStatus.classList.add('hidden'); }
 
 // ─── التحقق من صحة المدخلات ───────────────────────────────
 function validateField(id, value) {
-  const errEl = document.getElementById(`${id}-error`);
+  const errEl   = document.getElementById(`${id}-error`);
   const inputEl = document.getElementById(id);
   let msg = '';
-
   if (!value.trim()) {
     msg = 'هذا الحقل مطلوب';
   } else if (id === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
@@ -55,49 +51,39 @@ function validateField(id, value) {
   } else if (id === 'phone' && !/^[\d\s\+\-\(\)]{7,20}$/.test(value)) {
     msg = 'رقم الهاتف غير صالح';
   }
-
   errEl.textContent = msg;
   inputEl.classList.toggle('error', !!msg);
   return !msg;
 }
-
 function validateAll() {
   let ok = true;
-  fields.forEach(id => {
-    const val = document.getElementById(id).value;
-    if (!validateField(id, val)) ok = false;
-  });
+  fields.forEach(id => { if (!validateField(id, document.getElementById(id).value)) ok = false; });
   return ok;
 }
 
 // ─── تنسيق التاريخ ────────────────────────────────────────
 function formatDate(isoString) {
   if (!isoString) return '—';
-  const d = new Date(isoString);
-  return d.toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' });
+  return new Date(isoString).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 // ─── رسم الجدول ───────────────────────────────────────────
 function renderTable(rows) {
-  const count = rows.length;
-  recordCount.textContent = `${count} موظف`;
-
-  if (count === 0) {
+  recordCount.textContent = `${rows.length} موظف`;
+  if (rows.length === 0) {
     tableBody.innerHTML = `
-      <tr class="empty-row">
-        <td colspan="7">
-          <div class="empty-state">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
-            <p>لا توجد سجلات بعد. أضف أول موظف!</p>
-          </div>
-        </td>
-      </tr>`;
+      <tr class="empty-row"><td colspan="8">
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+          <p>لا توجد سجلات بعد. أضف أول موظف!</p>
+        </div>
+      </td></tr>`;
     return;
   }
-
   tableBody.innerHTML = rows.map((r, i) => `
     <tr>
       <td>${i + 1}</td>
+      <td>${escHtml(r.employee_code || '—')}</td>
       <td>${escHtml(r.full_name)}</td>
       <td>${escHtml(r.email)}</td>
       <td>${escHtml(r.phone)}</td>
@@ -117,10 +103,7 @@ function escHtml(str) {
 async function fetchEmployees() {
   try {
     const { data, error } = await window.supabaseClient
-      .from(TABLE_NAME)
-      .select('*')
-      .order('created_at', { ascending: false });
-
+      .from(TABLE_NAME).select('*').order('created_at', { ascending: false });
     if (error) throw error;
     renderTable(data || []);
   } catch (err) {
@@ -133,41 +116,32 @@ async function fetchEmployees() {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   clearStatus();
-
   if (!validateAll()) return;
 
-  // جمع البيانات
   const payload = {
-    full_name:  document.getElementById('fullName').value.trim(),
-    email:      document.getElementById('email').value.trim().toLowerCase(),
-    phone:      document.getElementById('phone').value.trim(),
-    department: document.getElementById('department').value,
-    job_title:  document.getElementById('jobTitle').value.trim(),
+    full_name:     document.getElementById('fullName').value.trim(),
+    email:         document.getElementById('email').value.trim().toLowerCase(),
+    phone:         document.getElementById('phone').value.trim(),
+    department:    document.getElementById('department').value,
+    job_title:     document.getElementById('jobTitle').value.trim(),
+    employee_code: document.getElementById('employeeCode').value.trim(),
   };
 
-  // حالة التحميل
   submitBtn.disabled = true;
   submitBtn.classList.add('loading');
   submitBtn.querySelector('.btn-text').textContent = 'جاري الحفظ';
 
   try {
-    const { error } = await window.supabaseClient
-      .from(TABLE_NAME)
-      .insert([payload]);
-
+    const { error } = await window.supabaseClient.from(TABLE_NAME).insert([payload]);
     if (error) throw error;
-
-    // نجاح
     form.reset();
     fields.forEach(id => {
       document.getElementById(id).classList.remove('error');
       document.getElementById(`${id}-error`).textContent = '';
     });
-
     setStatus('✅ تم حفظ بيانات الموظف بنجاح!', 'success');
     showToast('تم حفظ الموظف بنجاح');
     await fetchEmployees();
-
   } catch (err) {
     console.error('خطأ في الحفظ:', err);
     const msg = err.code === '23505'
@@ -193,30 +167,21 @@ resetBtn.addEventListener('click', () => {
 // ─── التحقق الفوري عند الكتابة ───────────────────────────
 fields.forEach(id => {
   const el = document.getElementById(id);
-  el.addEventListener('blur', () => validateField(id, el.value));
-  el.addEventListener('input', () => {
-    if (el.classList.contains('error')) validateField(id, el.value);
-  });
+  el.addEventListener('blur',  () => validateField(id, el.value));
+  el.addEventListener('input', () => { if (el.classList.contains('error')) validateField(id, el.value); });
 });
 
 // ─── بدء التشغيل ──────────────────────────────────────────
-(async () => {
-  await fetchEmployees();
-})();
+(async () => { await fetchEmployees(); })();
 
-// ─── Export to Excel (HTML Table → xlsx منسق) ─────────────
+// ─── Export to Excel ──────────────────────────────────────
 async function exportToExcel() {
   const { data, error } = await window.supabaseClient
-    .from(TABLE_NAME)
-    .select('*')
-    .order('created_at', { ascending: false });
+    .from(TABLE_NAME).select('*').order('created_at', { ascending: false });
 
-  if (error || !data || !data.length) {
-    showToast('لا توجد بيانات للتصدير!');
-    return;
-  }
+  if (error || !data || !data.length) { showToast('لا توجد بيانات للتصدير!'); return; }
 
-  const headers = ['#', 'الاسم الكامل', 'البريد الإلكتروني', 'رقم الهاتف', 'القسم', 'المسمى الوظيفي', 'تاريخ التسجيل'];
+  const headers = ['#', 'كود الموظف', 'الاسم الكامل', 'البريد الإلكتروني', 'رقم الهاتف', 'القسم', 'المسمى الوظيفي', 'تاريخ التسجيل'];
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
   const headerCells = headers.map(h =>
@@ -226,7 +191,7 @@ async function exportToExcel() {
 
   const dataRows = data.map((r, i) => {
     const bg = i % 2 === 0 ? '#F7F9FC' : '#FFFFFF';
-    const vals = [i+1, r.full_name, r.email, r.phone, r.department, r.job_title, formatDate(r.created_at)];
+    const vals = [i+1, r.employee_code||'—', r.full_name, r.email, r.phone, r.department, r.job_title, formatDate(r.created_at)];
     const cells = vals.map((v, ci) =>
       `<td style="background-color:${ci===0?'#EEF2F7':bg};padding:6px 10px;
         border:1px solid #D4E0EF;text-align:${ci===0?'center':'right'};
@@ -239,14 +204,11 @@ async function exportToExcel() {
     <html xmlns:o="urn:schemas-microsoft-com:office:office"
           xmlns:x="urn:schemas-microsoft-com:office:excel"
           xmlns="http://www.w3.org/TR/REC-html40">
-    <head>
-      <meta charset="UTF-8">
-      <!--[if gte mso 9]>
-      <xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+    <head><meta charset="UTF-8">
+      <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
         <x:Name>الموظفون</x:Name>
         <x:WorksheetOptions><x:DisplayRightToLeft/></x:WorksheetOptions>
-      </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml>
-      <![endif]-->
+      </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
     </head>
     <body>
       <table style="border-collapse:collapse;font-family:Arial,sans-serif;direction:rtl;">
@@ -258,9 +220,7 @@ async function exportToExcel() {
   const blob = new Blob(['\uFEFF' + html], { type: 'application/vnd.ms-excel;charset=utf-8' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'employees.xls';
-  a.click();
+  a.href = url; a.download = 'employees.xls'; a.click();
   URL.revokeObjectURL(url);
   showToast('تم تصدير البيانات بنجاح! ✅');
 }
