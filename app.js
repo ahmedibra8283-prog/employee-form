@@ -203,31 +203,89 @@ fields.forEach(id => {
 (async () => {
   await fetchEmployees();
 })();
-// ─── Export to Excel ──────────────────────────────────────
+
+// ─── Export to Excel (مع تنسيق احترافي) ──────────────────
 async function exportToExcel() {
   const { data, error } = await window.supabaseClient
     .from(TABLE_NAME)
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (error || !data.length) {
+  if (error || !data || !data.length) {
     showToast('لا توجد بيانات للتصدير!');
     return;
   }
 
-  const rows = data.map((r, i) => ({
-    '#': i + 1,
-    'الاسم الكامل': r.full_name,
-    'البريد الإلكتروني': r.email,
-    'رقم الهاتف': r.phone,
-    'القسم': r.department,
-    'المسمى الوظيفي': r.job_title,
-    'تاريخ التسجيل': formatDate(r.created_at),
-  }));
+  const headers = ['#', 'الاسم الكامل', 'البريد الإلكتروني', 'رقم الهاتف', 'القسم', 'المسمى الوظيفي', 'تاريخ التسجيل'];
 
-  const ws = XLSX.utils.json_to_sheet(rows);
+  const rows = data.map((r, i) => [
+    i + 1,
+    r.full_name,
+    r.email,
+    r.phone,
+    r.department,
+    r.job_title,
+    formatDate(r.created_at),
+  ]);
+
+  // إنشاء الشيت من مصفوفة
+  const wsData = [headers, ...rows];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // عرض الأعمدة
+  ws['!cols'] = [
+    { wch: 5  },   // #
+    { wch: 25 },   // الاسم
+    { wch: 30 },   // البريد
+    { wch: 18 },   // الهاتف
+    { wch: 20 },   // القسم
+    { wch: 25 },   // المسمى
+    { wch: 18 },   // التاريخ
+  ];
+
+  // تنسيق صف الهيدر
+  headers.forEach((_, colIdx) => {
+    const cellRef = XLSX.utils.encode_cell({ r: 0, c: colIdx });
+    if (!ws[cellRef]) return;
+    ws[cellRef].s = {
+      font:      { bold: true, color: { rgb: 'FFFFFF' }, sz: 12 },
+      fill:      { fgColor: { rgb: '1E3A5F' } },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+      border: {
+        top:    { style: 'thin', color: { rgb: 'FFFFFF' } },
+        bottom: { style: 'thin', color: { rgb: 'FFFFFF' } },
+        left:   { style: 'thin', color: { rgb: 'FFFFFF' } },
+        right:  { style: 'thin', color: { rgb: 'FFFFFF' } },
+      }
+    };
+  });
+
+  // تنسيق صفوف البيانات
+  rows.forEach((_, rowIdx) => {
+    const isEven = rowIdx % 2 === 0;
+    headers.forEach((__, colIdx) => {
+      const cellRef = XLSX.utils.encode_cell({ r: rowIdx + 1, c: colIdx });
+      if (!ws[cellRef]) return;
+      ws[cellRef].s = {
+        fill:      { fgColor: { rgb: isEven ? 'F7F9FC' : 'FFFFFF' } },
+        alignment: { horizontal: colIdx === 0 ? 'center' : 'right', vertical: 'center' },
+        border: {
+          top:    { style: 'thin', color: { rgb: 'D4E0EF' } },
+          bottom: { style: 'thin', color: { rgb: 'D4E0EF' } },
+          left:   { style: 'thin', color: { rgb: 'D4E0EF' } },
+          right:  { style: 'thin', color: { rgb: 'D4E0EF' } },
+        }
+      };
+    });
+  });
+
+  // ارتفاع صف الهيدر
+  ws['!rows'] = [{ hpt: 28 }];
+
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'الموظفون');
-  XLSX.writeFile(wb, 'employees.xlsx');
+
+  // حفظ مع تنسيق
+  XLSX.writeFile(wb, 'employees.xlsx', { cellStyles: true });
   showToast('تم تصدير البيانات بنجاح! ✅');
 }
