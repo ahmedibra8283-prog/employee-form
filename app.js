@@ -398,31 +398,15 @@ function exportBPOToExcel() {
   const lineArr = lines.split('\n').filter(Boolean);
   const maxLen  = Math.max(numArr.length, lineArr.length);
 
-  const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Build CSV
+  const csvRows = [['Numbers', 'Lines']];
+  for (let i = 0; i < maxLen; i++) {
+    csvRows.push([numArr[i] || '', lineArr[i] || '']);
+  }
+  const csv = csvRows.map(r => r.map(v => `"${v.replace(/"/g, '""')}"`).join(',')).join('\n');
 
-  const hRow = `
-    <th style="background:#1E3A5F;color:#fff;font-weight:bold;padding:8px;border:1px solid #fff;text-align:center;">Numbers</th>
-    <th style="background:#1E3A5F;color:#fff;font-weight:bold;padding:8px;border:1px solid #fff;text-align:center;">Lines</th>`;
-
-  const dRows = Array.from({length: maxLen}, (_, i) => {
-    const bg = i % 2 === 0 ? '#F7F9FC' : '#fff';
-    return `<tr>
-      <td style="background:${bg};padding:6px 10px;border:1px solid #D4E0EF;text-align:left;font-family:monospace;white-space:nowrap;">${esc(numArr[i]||'')}</td>
-      <td style="background:${bg};padding:6px 10px;border:1px solid #D4E0EF;white-space:nowrap;">${esc(lineArr[i]||'')}</td>
-    </tr>`;
-  }).join('');
-
-  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-  <head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
-    <x:Name>BPO Numbers</x:Name>
-  </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>
-  <body><table style="border-collapse:collapse;font-family:Arial;">
-    <thead><tr>${hRow}</tr></thead>
-    <tbody>${dRows}</tbody>
-  </table></body></html>`;
-
-  const blob = new Blob(['\uFEFF' + html], {type: 'application/vnd.ms-excel;charset=utf-8'});
-  const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(blob), download: 'BPO_Numbers.xls'});
+  const blob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8'});
+  const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(blob), download: 'BPO_Numbers.csv'});
   a.click();
   URL.revokeObjectURL(a.href);
   showToast('تم التصدير! ✅');
