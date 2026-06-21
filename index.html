@@ -22,7 +22,6 @@
         <div class="brand-sub">نظام الموظفين</div>
       </div>
     </div>
-
     <nav class="sidebar-nav">
       <div class="nav-group-label">الموظفون</div>
       <a class="nav-item active" onclick="showTab('form', this)">
@@ -34,7 +33,6 @@
         <span>قائمة الموظفين</span>
         <span class="nav-badge" id="navEmpCount">0</span>
       </a>
-
       <div class="nav-group-label">المشاريع</div>
       <a class="nav-item" onclick="showTab('proj-form', this)">
         <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
@@ -46,7 +44,6 @@
         <span class="nav-badge" id="navProjCount">0</span>
       </a>
     </nav>
-
     <div class="sidebar-footer"><span>Supabase · Netlify</span></div>
   </aside>
 
@@ -56,115 +53,46 @@
     <!-- ─── TAB: تسجيل موظف ─── -->
     <div class="tab-panel active" id="tab-form">
       <div class="page-header">
-        <div>
-          <h1 class="page-title">تسجيل موظف جديد</h1>
-          <p class="page-sub">أدخل بيانات الموظف وسيتم حفظها مباشرة</p>
-        </div>
+        <div><h1 class="page-title">تسجيل موظف جديد</h1><p class="page-sub">أدخل بيانات الموظف وسيتم حفظها مباشرة</p></div>
       </div>
       <form id="employeeForm" novalidate>
         <div class="form-sections">
-
           <div class="form-section">
             <div class="section-header"><span class="section-num">١</span><span>البيانات الأساسية</span></div>
             <div class="fields-row">
-              <div class="field sm">
-                <label>كود الموظف <span class="req">*</span></label>
-                <input type="text" id="employeeCode" placeholder="EMP-001" required />
-                <span class="ferr" id="employeeCode-error"></span>
-              </div>
-              <div class="field">
-                <label>الاسم الكامل <span class="req">*</span></label>
-                <input type="text" id="fullName" placeholder="محمد أحمد العلي" required />
-                <span class="ferr" id="fullName-error"></span>
-              </div>
-              <div class="field sm">
-                <label>القسم <span class="req">*</span></label>
-                <div class="sel-wrap">
-                  <select id="department" required>
-                    <option value="" disabled selected>اختر</option>
-                    <option>تقنية المعلومات</option>
-                    <option>الموارد البشرية</option>
-                    <option>المالية والمحاسبة</option>
-                    <option>التسويق</option>
-                    <option>المبيعات</option>
-                    <option>العمليات</option>
-                    <option>خدمة العملاء</option>
-                  </select>
-                  <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-                </div>
-                <span class="ferr" id="department-error"></span>
-              </div>
-              <div class="field">
-                <label>المسمى الوظيفي <span class="req">*</span></label>
-                <input type="text" id="jobTitle" placeholder="مهندس برمجيات" required />
-                <span class="ferr" id="jobTitle-error"></span>
-              </div>
-              <div class="field sm">
-                <label>المشروع</label>
-                <div class="sel-wrap">
-                  <select id="project">
-                    <option value="">— بدون مشروع —</option>
-                  </select>
-                  <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-                </div>
-              </div>
+              <div class="field sm"><label>كود الموظف <span class="req">*</span></label><input type="text" id="employeeCode" placeholder="EMP-001" required /><span class="ferr" id="employeeCode-error"></span></div>
+              <div class="field"><label>الاسم الكامل <span class="req">*</span></label><input type="text" id="fullName" placeholder="محمد أحمد العلي" required /><span class="ferr" id="fullName-error"></span></div>
+              <div class="field sm"><label>القسم <span class="req">*</span></label><div class="sel-wrap"><select id="department" required><option value="" disabled selected>اختر</option><option>تقنية المعلومات</option><option>الموارد البشرية</option><option>المالية والمحاسبة</option><option>التسويق</option><option>المبيعات</option><option>العمليات</option><option>خدمة العملاء</option></select><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div><span class="ferr" id="department-error"></span></div>
+              <div class="field"><label>المسمى الوظيفي <span class="req">*</span></label><input type="text" id="jobTitle" placeholder="مهندس برمجيات" required /><span class="ferr" id="jobTitle-error"></span></div>
+              <div class="field sm"><label>المشروع</label><div class="sel-wrap"><select id="project"><option value="">— بدون مشروع —</option></select><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div></div>
             </div>
           </div>
-
           <div class="form-section">
             <div class="section-header"><span class="section-num">٢</span><span>الراتب</span></div>
             <div class="fields-row">
-              <div class="field sm">
-                <label>الراتب الأساسي <span class="req">*</span></label>
-                <input type="number" id="basicSalary" placeholder="0.00" min="0" required />
-                <span class="ferr" id="basicSalary-error"></span>
-              </div>
-              <div class="field sm">
-                <label>الراتب الشامل <span class="note">× 1.35 تلقائي</span></label>
-                <input type="number" id="totalSalary" placeholder="—" readonly />
-              </div>
+              <div class="field sm"><label>الراتب الأساسي <span class="req">*</span></label><input type="number" id="basicSalary" placeholder="0.00" min="0" required /><span class="ferr" id="basicSalary-error"></span></div>
+              <div class="field sm"><label>الراتب الشامل <span class="note">× 1.35 تلقائي</span></label><input type="number" id="totalSalary" placeholder="—" readonly /></div>
             </div>
           </div>
-
           <div class="form-section">
             <div class="section-header"><span class="section-num">٣</span><span>التواريخ</span></div>
             <div class="fields-row">
-              <div class="field sm">
-                <label>تاريخ الانضمام <span class="req">*</span></label>
-                <input type="date" id="joinDate" required />
-                <span class="ferr" id="joinDate-error"></span>
-              </div>
-              <div class="field sm">
-                <label>تاريخ الاستقالة <span class="note">اختياري</span></label>
-                <input type="date" id="resignationDate" />
-              </div>
+              <div class="field sm"><label>تاريخ الانضمام <span class="req">*</span></label><input type="date" id="joinDate" required /><span class="ferr" id="joinDate-error"></span></div>
+              <div class="field sm"><label>تاريخ الاستقالة <span class="note">اختياري</span></label><input type="date" id="resignationDate" /></div>
             </div>
           </div>
-
           <div class="form-section">
             <div class="section-header"><span class="section-num">٤</span><span>معلومات التواصل</span></div>
             <div class="fields-row">
-              <div class="field">
-                <label>البريد الإلكتروني <span class="req">*</span></label>
-                <input type="email" id="email" placeholder="mohammed@company.com" required />
-                <span class="ferr" id="email-error"></span>
-              </div>
-              <div class="field sm">
-                <label>رقم الهاتف <span class="req">*</span></label>
-                <input type="tel" id="phone" placeholder="+966 5X XXX XXXX" required />
-                <span class="ferr" id="phone-error"></span>
-              </div>
+              <div class="field"><label>البريد الإلكتروني <span class="req">*</span></label><input type="email" id="email" placeholder="mohammed@company.com" required /><span class="ferr" id="email-error"></span></div>
+              <div class="field sm"><label>رقم الهاتف <span class="req">*</span></label><input type="tel" id="phone" placeholder="+966 5X XXX XXXX" required /><span class="ferr" id="phone-error"></span></div>
             </div>
           </div>
-
         </div>
         <div id="empFormStatus" class="form-status hidden"></div>
         <div class="form-actions">
           <button type="reset" class="btn btn-ghost" id="resetBtn">مسح</button>
-          <button type="submit" class="btn btn-primary" id="submitBtn">
-            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-            <span class="btn-text">حفظ الموظف</span>
-          </button>
+          <button type="submit" class="btn btn-primary" id="submitBtn"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><span class="btn-text">حفظ الموظف</span></button>
         </div>
       </form>
     </div>
@@ -172,70 +100,78 @@
     <!-- ─── TAB: قائمة الموظفين ─── -->
     <div class="tab-panel" id="tab-employees">
       <div class="page-header">
-        <div>
-          <h1 class="page-title">قائمة الموظفين</h1>
-          <p class="page-sub"><span id="empCount">0</span> موظف مسجل</p>
-        </div>
-        <button class="btn btn-export" onclick="exportToExcel()">
-          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-          تصدير Excel
-        </button>
+        <div><h1 class="page-title">قائمة الموظفين</h1><p class="page-sub"><span id="empCount">0</span> موظف مسجل</p></div>
+        <button class="btn btn-export" onclick="exportToExcel()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>تصدير Excel</button>
       </div>
-      <div class="table-card">
-        <div class="table-scroll">
-          <table>
-            <thead><tr>
-              <th>#</th><th>الكود</th><th>الاسم</th><th>القسم</th><th>المسمى</th>
-              <th>المشروع</th><th>الأساسي</th><th>الشامل</th>
-              <th>الانضمام</th><th>الاستقالة</th><th>البريد</th><th>الهاتف</th>
-            </tr></thead>
-            <tbody id="empTableBody">
-              <tr><td colspan="12"><div class="empty-state">
-                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                <p>لا يوجد موظفون بعد</p>
-              </div></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div class="table-card"><div class="table-scroll">
+        <table><thead><tr><th>#</th><th>الكود</th><th>الاسم</th><th>القسم</th><th>المسمى</th><th>المشروع</th><th>الأساسي</th><th>الشامل</th><th>الانضمام</th><th>الاستقالة</th><th>البريد</th><th>الهاتف</th></tr></thead>
+        <tbody id="empTableBody"><tr><td colspan="12"><div class="empty-state"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><p>لا يوجد موظفون بعد</p></div></td></tr></tbody>
+        </table>
+      </div></div>
     </div>
 
     <!-- ─── TAB: تسجيل مشروع ─── -->
     <div class="tab-panel" id="tab-proj-form">
       <div class="page-header">
-        <div>
-          <h1 class="page-title">تسجيل مشروع جديد</h1>
-          <p class="page-sub">أضف مشروعاً جديداً لربطه بالموظفين</p>
-        </div>
+        <div><h1 class="page-title">تسجيل مشروع جديد</h1><p class="page-sub">أضف مشروعاً جديداً لربطه بالموظفين</p></div>
       </div>
       <form id="projectForm" novalidate>
         <div class="form-sections">
+
+          <!-- القسم 1: التعريف -->
           <div class="form-section">
-            <div class="section-header"><span class="section-num">١</span><span>بيانات المشروع</span></div>
+            <div class="section-header"><span class="section-num">١</span><span>بيانات التعريف</span></div>
             <div class="fields-row">
-              <div class="field">
-                <label>اسم المشروع <span class="req">*</span></label>
-                <input type="text" id="projectName" placeholder="مشروع الأتمتة" required />
-                <span class="ferr" id="projectName-error"></span>
-              </div>
+              <div class="field xs"><label>S.N.</label><input type="text" id="serialNumber" placeholder="01" /></div>
+              <div class="field sm"><label>Project Code <span class="req">*</span></label><input type="text" id="projectCode" placeholder="PRJ-001" required /><span class="ferr" id="projectCode-error"></span></div>
+              <div class="field sm"><label>Abbreviation Name</label><input type="text" id="abbreviation" placeholder="اختصار المشروع" /></div>
+              <div class="field"><label>اسم المشروع <span class="req">*</span></label><input type="text" id="projectName" placeholder="Projects Contractual Name" required /><span class="ferr" id="projectName-error"></span></div>
+            </div>
+            <div class="fields-row">
+              <div class="field"><label>Oracle Name 01</label><input type="text" id="oracleName01" placeholder="Oracle Name 01" /></div>
+              <div class="field"><label>Oracle Name 02</label><input type="text" id="oracleName02" placeholder="Oracle Name 02" /></div>
+            </div>
+          </div>
+
+          <!-- القسم 2: التواريخ -->
+          <div class="form-section">
+            <div class="section-header"><span class="section-num">٢</span><span>التواريخ</span></div>
+            <div class="fields-row">
+              <div class="field sm"><label>BL Start Date</label><input type="date" id="blStartDate" /></div>
+              <div class="field sm"><label>BL Finish Date</label><input type="date" id="blFinishDate" /></div>
+              <div class="field sm"><label>Modified BL Finish Date</label><input type="date" id="modifiedBlFinishDate" /></div>
+              <div class="field sm"><label>As of Date</label><input type="date" id="asOfDate" /></div>
+            </div>
+          </div>
+
+          <!-- القسم 3: المالية -->
+          <div class="form-section">
+            <div class="section-header"><span class="section-num">٣</span><span>البيانات المالية والتقدم</span></div>
+            <div class="fields-row">
+              <div class="field sm"><label>Contract Price</label><input type="number" id="contractPrice" placeholder="0.00" min="0" /></div>
+              <div class="field sm"><label>Direct Budget</label><input type="number" id="directBudget" placeholder="0.00" min="0" /></div>
+              <div class="field sm"><label>Indirect Budget</label><input type="number" id="indirectBudget" placeholder="0.00" min="0" /></div>
+              <div class="field xs"><label>Overall Duration (Months)</label><input type="number" id="overallDuration" placeholder="0" min="0" /></div>
+              <div class="field xs"><label>Actual % Progress</label><input type="number" id="actualProgress" placeholder="0" min="0" max="100" /></div>
+            </div>
+          </div>
+
+          <!-- القسم 4: الوصف -->
+          <div class="form-section">
+            <div class="section-header"><span class="section-num">٤</span><span>وصف المشروع</span></div>
+            <div class="fields-row">
               <div class="field field-full">
-                <label>وصف المشروع <span class="note">اختياري</span></label>
-                <textarea id="projectDesc" placeholder="وصف مختصر للمشروع..." rows="3"
-                  style="width:100%;padding:8px 11px;font-family:Cairo,sans-serif;font-size:.82rem;
-                  border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);
-                  resize:vertical;outline:none;direction:rtl;color:var(--text);transition:border-color var(--tr);">
-                </textarea>
+                <label>الوصف <span class="note">اختياري</span></label>
+                <textarea id="projectDesc" placeholder="وصف مختصر للمشروع..." rows="3" class="textarea-field"></textarea>
               </div>
             </div>
           </div>
+
         </div>
         <div id="projFormStatus" class="form-status hidden"></div>
         <div class="form-actions">
           <button type="reset" class="btn btn-ghost" id="resetProjBtn">مسح</button>
-          <button type="submit" class="btn btn-primary" id="projSubmitBtn">
-            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-            <span class="btn-text">حفظ المشروع</span>
-          </button>
+          <button type="submit" class="btn btn-primary" id="projSubmitBtn"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><span class="btn-text">حفظ المشروع</span></button>
         </div>
       </form>
     </div>
@@ -243,30 +179,22 @@
     <!-- ─── TAB: قائمة المشاريع ─── -->
     <div class="tab-panel" id="tab-projects">
       <div class="page-header">
-        <div>
-          <h1 class="page-title">قائمة المشاريع</h1>
-          <p class="page-sub"><span id="projCount">0</span> مشروع مسجل</p>
-        </div>
+        <div><h1 class="page-title">قائمة المشاريع</h1><p class="page-sub"><span id="projCount">0</span> مشروع مسجل</p></div>
+        <button class="btn btn-export" onclick="exportProjectsToExcel()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>تصدير Excel</button>
       </div>
-      <div class="table-card">
-        <div class="table-scroll">
-          <table>
-            <thead><tr>
-              <th>#</th>
-              <th>اسم المشروع</th>
-              <th>الوصف</th>
-              <th>تاريخ الإضافة</th>
-              <th>حذف</th>
-            </tr></thead>
-            <tbody id="projTableBody">
-              <tr><td colspan="5"><div class="empty-state">
-                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-                <p>لا توجد مشاريع بعد</p>
-              </div></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div class="table-card"><div class="table-scroll">
+        <table><thead><tr>
+          <th>#</th><th>S.N.</th><th>Project Code</th><th>Abbreviation</th>
+          <th>اسم المشروع</th><th>Oracle 01</th><th>Oracle 02</th>
+          <th>BL Start</th><th>BL Finish</th><th>Modified BL</th><th>As of</th>
+          <th>Contract Price</th><th>Direct Budget</th><th>Indirect Budget</th>
+          <th>Duration</th><th>% Progress</th><th>حذف</th>
+        </tr></thead>
+        <tbody id="projTableBody"><tr><td colspan="17"><div class="empty-state">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+          <p>لا توجد مشاريع بعد</p></div></td></tr></tbody>
+        </table>
+      </div></div>
     </div>
 
   </main>
