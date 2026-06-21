@@ -28,7 +28,7 @@ function showTab(name, el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   if (el) el.classList.add('active');
-  document.getElementById('mainTop').scrollIntoView({behavior: 'instant', block: 'start'});
+  setTimeout(() => { window.scrollTo(0, 0); }, 10);
 }
 
 // ─── Auto salary ─────────────────────────────────────────
