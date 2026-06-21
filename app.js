@@ -381,33 +381,19 @@ function copyBPO(elId, label) {
 
 // ─── Export BPO to Excel ──────────────────────────────────
 function exportBPOToExcel() {
-  // تشغيل Extract تلقائياً لو مفيش داتا
   const inputText = document.getElementById('bpoInput').value.trim();
   if (!inputText) { showToast('الصق النص أولاً!'); return; }
   extractBPO();
 
   const numbers = document.getElementById('bpoOutput').value;
   const lines   = document.getElementById('poOutput').value;
-
-  if (!numbers || numbers === 'No numbers found.') {
-    showToast('لم يتم العثور على أرقام!');
-    return;
-  }
+  if (!numbers || numbers === 'No numbers found.') { showToast('لم يتم العثور على أرقام!'); return; }
 
   const numArr  = numbers.split('\n').filter(Boolean);
   const lineArr = lines.split('\n').filter(Boolean);
   const maxLen  = Math.max(numArr.length, lineArr.length);
 
-  // Build CSV
-  const csvRows = [['Numbers', 'Lines']];
-  for (let i = 0; i < maxLen; i++) {
-    csvRows.push([numArr[i] || '', lineArr[i] || '']);
-  }
-  const csv = csvRows.map(r => r.map(v => `"${v.replace(/"/g, '""')}"`).join(',')).join('\n');
-
-  const blob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8'});
-  const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(blob), download: 'BPO_Numbers.csv'});
-  a.click();
-  URL.revokeObjectURL(a.href);
+  const rows = Array.from({length: maxLen}, (_, i) => [numArr[i]||'', lineArr[i]||'']);
+  buildExcel(['Numbers', 'Lines'], rows, 'BPO_Numbers.xls', 'BPO Numbers');
   showToast('تم التصدير! ✅');
 }
