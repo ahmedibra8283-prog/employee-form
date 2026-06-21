@@ -362,6 +362,12 @@ function extractBPO() {
 
   outNum.value   = bpoLines.length ? [...new Set(bpoLines)].join('\n') : 'No numbers found.';
   outLines.value = poLines.length  ? [...new Set(poLines)].join('\n')  : 'No lines found.';
+
+  // Auto resize
+  [outNum, outLines].forEach(el => {
+    el.style.height = 'auto';
+    el.style.height = (el.scrollHeight + 4) + 'px';
+  });
 }
 
 function copyBPO(elId, label) {
