@@ -9,230 +9,225 @@
 </head>
 <body>
 
-  <div class="bg-orb bg-orb-1"></div>
-  <div class="bg-orb bg-orb-2"></div>
+<div class="app-layout">
 
-  <main class="container">
-
-    <header class="site-header">
-      <div class="logo-mark">
-        <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-          <rect width="38" height="38" rx="10" fill="#C9A84C"/>
-          <path d="M19 8C13.48 8 9 12.48 9 18s4.48 10 10 10 10-4.48 10-10S24.52 8 19 8zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="#1E3A5F"/>
-        </svg>
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
       </div>
-      <div class="header-text">
-        <h1>نظام تسجيل الموظفين</h1>
-        <p class="subtitle">أدخل بيانات الموظف لحفظها في قاعدة البيانات</p>
+      <div>
+        <div class="brand-name">HR System</div>
+        <div class="brand-sub">نظام الموظفين</div>
       </div>
-    </header>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" onclick="showTab('form')">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+        تسجيل موظف
+      </a>
+      <a class="nav-item" onclick="showTab('table')">
+        <svg viewBox="0 0 24 24"><path d="M3 3h18v2H3V3zm0 4h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/></svg>
+        قائمة الموظفين
+        <span class="nav-badge" id="navCount">0</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>Supabase · Netlify</span>
+    </div>
+  </aside>
 
-    <section class="card form-card">
-      <div class="card-header">
-        <span class="card-badge">تسجيل جديد</span>
-        <h2>بيانات الموظف</h2>
+  <!-- ═══ MAIN ═══ -->
+  <main class="main-content">
+
+    <!-- ─── FORM TAB ─── -->
+    <div class="tab-panel active" id="tab-form">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">تسجيل موظف جديد</h1>
+          <p class="page-sub">أدخل بيانات الموظف وسيتم حفظها مباشرة</p>
+        </div>
       </div>
 
       <form id="employeeForm" novalidate>
+        <div class="form-sections">
 
-        <!-- ─── القسم الأول: بيانات أساسية ─── -->
-        <div class="section-title">البيانات الأساسية</div>
-        <div class="form-grid">
-
-          <div class="field">
-            <label for="employeeCode">كود الموظف <span class="required">*</span></label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
-              <input type="text" id="employeeCode" placeholder="EMP-001" required />
+          <!-- القسم 1 -->
+          <div class="form-section">
+            <div class="section-header">
+              <span class="section-num">١</span>
+              <span>البيانات الأساسية</span>
             </div>
-            <span class="field-error" id="employeeCode-error"></span>
-          </div>
-
-          <div class="field">
-            <label for="fullName">الاسم الكامل <span class="required">*</span></label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-              <input type="text" id="fullName" placeholder="محمد أحمد العلي" required />
-            </div>
-            <span class="field-error" id="fullName-error"></span>
-          </div>
-
-          <div class="field">
-            <label for="department">القسم <span class="required">*</span></label>
-            <div class="input-wrap select-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12z"/></svg>
-              <select id="department" required>
-                <option value="" disabled selected>اختر القسم</option>
-                <option>تقنية المعلومات</option>
-                <option>الموارد البشرية</option>
-                <option>المالية والمحاسبة</option>
-                <option>التسويق</option>
-                <option>المبيعات</option>
-                <option>العمليات</option>
-                <option>خدمة العملاء</option>
-              </select>
-              <svg class="select-arrow" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-            </div>
-            <span class="field-error" id="department-error"></span>
-          </div>
-
-          <div class="field">
-            <label for="jobTitle">المسمى الوظيفي <span class="required">*</span></label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.86.18-1.3C18 2.1 15.9 0 13.3 0c-1.4 0-2.6.6-3.4 1.5L9 3 8.1 1.6C7.3.6 6.1 0 4.7 0 2.1 0 0 2.1 0 4.7c0 .44.11.86.18 1.3H0v2h20V6zM2 8v14h8v-5h4v5h8V8H2z"/></svg>
-              <input type="text" id="jobTitle" placeholder="مهندس برمجيات أول" required />
-            </div>
-            <span class="field-error" id="jobTitle-error"></span>
-          </div>
-
-          <div class="field">
-            <label for="project">المشروع</label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
-              <input type="text" id="project" placeholder="مدخل" />
+            <div class="fields-row">
+              <div class="field sm">
+                <label>كود الموظف <span class="req">*</span></label>
+                <input type="text" id="employeeCode" placeholder="EMP-001" required />
+                <span class="ferr" id="employeeCode-error"></span>
+              </div>
+              <div class="field">
+                <label>الاسم الكامل <span class="req">*</span></label>
+                <input type="text" id="fullName" placeholder="محمد أحمد العلي" required />
+                <span class="ferr" id="fullName-error"></span>
+              </div>
+              <div class="field sm">
+                <label>القسم <span class="req">*</span></label>
+                <div class="sel-wrap">
+                  <select id="department" required>
+                    <option value="" disabled selected>اختر</option>
+                    <option>تقنية المعلومات</option>
+                    <option>الموارد البشرية</option>
+                    <option>المالية والمحاسبة</option>
+                    <option>التسويق</option>
+                    <option>المبيعات</option>
+                    <option>العمليات</option>
+                    <option>خدمة العملاء</option>
+                  </select>
+                  <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                </div>
+                <span class="ferr" id="department-error"></span>
+              </div>
+              <div class="field">
+                <label>المسمى الوظيفي <span class="req">*</span></label>
+                <input type="text" id="jobTitle" placeholder="مهندس برمجيات" required />
+                <span class="ferr" id="jobTitle-error"></span>
+              </div>
+              <div class="field">
+                <label>المشروع</label>
+                <input type="text" id="project" placeholder="اختياري" />
+              </div>
             </div>
           </div>
 
-        </div>
-
-        <!-- ─── القسم الثاني: الراتب ─── -->
-        <div class="section-title">الراتب</div>
-        <div class="form-grid">
-
-          <div class="field">
-            <label for="basicSalary">الراتب الأساسي <span class="required">*</span></label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
-              <input type="number" id="basicSalary" placeholder="0.00" min="0" required />
+          <!-- القسم 2 -->
+          <div class="form-section">
+            <div class="section-header">
+              <span class="section-num">٢</span>
+              <span>الراتب</span>
             </div>
-            <span class="field-error" id="basicSalary-error"></span>
-          </div>
-
-          <div class="field">
-            <label for="totalSalary">الراتب الشامل <span class="note">(الراتب الأساسي × 1.35)</span></label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
-              <input type="number" id="totalSalary" placeholder="ناتج ضرب الراتب الأساسي × 1.35" readonly />
+            <div class="fields-row">
+              <div class="field sm">
+                <label>الراتب الأساسي <span class="req">*</span></label>
+                <input type="number" id="basicSalary" placeholder="0.00" min="0" required />
+                <span class="ferr" id="basicSalary-error"></span>
+              </div>
+              <div class="field sm">
+                <label>الراتب الشامل <span class="note">× 1.35 تلقائي</span></label>
+                <input type="number" id="totalSalary" placeholder="—" readonly />
+              </div>
             </div>
           </div>
 
-        </div>
-
-        <!-- ─── القسم الثالث: التواريخ ─── -->
-        <div class="section-title">التواريخ</div>
-        <div class="form-grid">
-
-          <div class="field">
-            <label for="joinDate">تاريخ الانضمام <span class="required">*</span></label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-              <input type="date" id="joinDate" required />
+          <!-- القسم 3 -->
+          <div class="form-section">
+            <div class="section-header">
+              <span class="section-num">٣</span>
+              <span>التواريخ</span>
             </div>
-            <span class="field-error" id="joinDate-error"></span>
-          </div>
-
-          <div class="field">
-            <label for="resignationDate">تاريخ الاستقالة <span class="note">(اختياري / مازال في الشركة)</span></label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-              <input type="date" id="resignationDate" />
+            <div class="fields-row">
+              <div class="field sm">
+                <label>تاريخ الانضمام <span class="req">*</span></label>
+                <input type="date" id="joinDate" required />
+                <span class="ferr" id="joinDate-error"></span>
+              </div>
+              <div class="field sm">
+                <label>تاريخ الاستقالة <span class="note">اختياري</span></label>
+                <input type="date" id="resignationDate" />
+              </div>
             </div>
           </div>
 
-        </div>
-
-        <!-- ─── القسم الرابع: معلومات التواصل ─── -->
-        <div class="section-title">معلومات التواصل</div>
-        <div class="form-grid">
-
-          <div class="field">
-            <label for="email">البريد الإلكتروني <span class="required">*</span></label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-              <input type="email" id="email" placeholder="mohammed@company.com" required />
+          <!-- القسم 4 -->
+          <div class="form-section">
+            <div class="section-header">
+              <span class="section-num">٤</span>
+              <span>معلومات التواصل</span>
             </div>
-            <span class="field-error" id="email-error"></span>
+            <div class="fields-row">
+              <div class="field">
+                <label>البريد الإلكتروني <span class="req">*</span></label>
+                <input type="email" id="email" placeholder="mohammed@company.com" required />
+                <span class="ferr" id="email-error"></span>
+              </div>
+              <div class="field sm">
+                <label>رقم الهاتف <span class="req">*</span></label>
+                <input type="tel" id="phone" placeholder="+966 5X XXX XXXX" required />
+                <span class="ferr" id="phone-error"></span>
+              </div>
+            </div>
           </div>
 
-          <div class="field">
-            <label for="phone">رقم الهاتف <span class="required">*</span></label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
-              <input type="tel" id="phone" placeholder="+966 5X XXX XXXX" required />
-            </div>
-            <span class="field-error" id="phone-error"></span>
-          </div>
-
-        </div>
-
-        <div class="form-actions">
-          <button type="reset" class="btn btn-secondary" id="resetBtn">مسح البيانات</button>
-          <button type="submit" class="btn btn-primary" id="submitBtn">
-            <span class="btn-text">حفظ الموظف</span>
-            <svg class="btn-icon" viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
-          </button>
         </div>
 
         <div id="formStatus" class="form-status hidden"></div>
-      </form>
-    </section>
 
-    <section class="card table-card">
-      <div class="card-header">
-        <span class="card-badge card-badge-alt">السجلات</span>
-        <h2>الموظفون المسجلون</h2>
-        <span class="record-count" id="recordCount">0 موظف</span>
+        <div class="form-actions">
+          <button type="reset" class="btn btn-ghost" id="resetBtn">مسح</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            <span class="btn-text">حفظ الموظف</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ─── TABLE TAB ─── -->
+    <div class="tab-panel" id="tab-table">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">قائمة الموظفين</h1>
+          <p class="page-sub"><span id="recordCount">0</span> موظف مسجل</p>
+        </div>
         <button class="btn btn-export" onclick="exportToExcel()">
-          <svg class="btn-icon" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           تصدير Excel
         </button>
       </div>
-      <div class="table-wrap">
-        <table id="employeesTable">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>الكود</th>
-              <th>الاسم</th>
-              <th>القسم</th>
-              <th>المسمى</th>
-              <th>المشروع</th>
-              <th>الراتب الأساسي</th>
-              <th>الراتب الشامل</th>
-              <th>تاريخ الانضمام</th>
-              <th>تاريخ الاستقالة</th>
-              <th>البريد</th>
-              <th>الهاتف</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody">
-            <tr class="empty-row">
-              <td colspan="12">
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table id="employeesTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>الكود</th>
+                <th>الاسم</th>
+                <th>القسم</th>
+                <th>المسمى</th>
+                <th>المشروع</th>
+                <th>الأساسي</th>
+                <th>الشامل</th>
+                <th>الانضمام</th>
+                <th>الاستقالة</th>
+                <th>البريد</th>
+                <th>الهاتف</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td colspan="12">
                 <div class="empty-state">
                   <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
-                  <p>لا توجد سجلات بعد. أضف أول موظف!</p>
+                  <p>لا توجد سجلات</p>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </section>
+    </div>
 
   </main>
+</div>
 
-  <footer class="site-footer">
-    <p>مدعوم بـ <strong>Supabase</strong> · مستضاف على <strong>Netlify</strong></p>
-  </footer>
+<!-- Toast -->
+<div id="toast" class="toast hidden">
+  <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+  <span id="toastMsg"></span>
+</div>
 
-  <div id="toast" class="toast hidden">
-    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-    <span id="toastMsg"></span>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-  <script src="supabase.js"></script>
-  <script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script src="supabase.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
