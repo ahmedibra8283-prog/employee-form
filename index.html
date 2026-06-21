@@ -217,12 +217,12 @@
       <div class="page-header">
         <div><h1 class="page-title">Refine PR/PO Numbers</h1><p class="page-sub">استخراج وتنقية أرقام BPO/BPR من النصوص</p></div>
       </div>
-      <div class="form-sections">
+      <div class="bpo-layout">
         <div class="form-section">
           <div class="section-header"><span class="section-num">١</span><span>الصق النص هنا</span></div>
           <div style="padding:14px 16px;">
-            <textarea id="bpoInput" rows="10" class="textarea-field" placeholder="Paste your text here..."></textarea>
-            <div class="form-actions" style="margin-top:12px;">
+            <textarea id="bpoInput" class="textarea-field" style="min-height:130px;height:130px;resize:vertical;" placeholder="Paste your text here..."></textarea>
+            <div class="form-actions" style="margin-top:10px;">
               <button class="btn btn-ghost" onclick="document.getElementById('bpoInput').value=''">مسح</button>
               <button class="btn btn-primary" onclick="extractBPO()">
                 <svg class="btn-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
