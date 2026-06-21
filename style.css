@@ -119,11 +119,13 @@ body {
 ═══════════════════════════════════════════════ */
 .main-content {
   flex: 1;
-  margin-right: 220px;
-  margin-left: 0;
-  padding: 24px 28px;
+  padding-right: 240px;
+  padding-left: 28px;
+  padding-top: 24px;
+  padding-bottom: 24px;
   min-height: 100vh;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .tab-panel { display: none; }
@@ -566,4 +568,25 @@ tbody td:first-child { color: var(--muted); font-weight: 700; font-size: .7rem; 
 #tab-bpo-tool .page-header {
   margin-bottom: 12px;
   padding-bottom: 0;
+}
+
+/* ═══ FIX BLANK SPACE ═══ */
+#tab-bpo-tool .page-header {
+  padding: 0;
+  margin-bottom: 12px;
+  min-height: unset;
+}
+#tab-bpo-tool .page-title { font-size: 1rem; }
+#tab-bpo-tool .page-sub   { font-size: .72rem; }
+
+/* Make input textarea smaller */
+#bpoInput {
+  min-height: 80px !important;
+  height: 80px !important;
+}
+
+/* Make output textareas smaller */
+#bpoOutput, #poOutput {
+  min-height: 80px !important;
+  height: 80px !important;
 }
