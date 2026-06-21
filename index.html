@@ -215,6 +215,10 @@
             <textarea id="bpoInput" class="textarea-field" style="height:90px;resize:vertical;" placeholder="Paste your text here..."></textarea>
             <div class="form-actions" style="margin-top:8px;">
               <button class="btn btn-ghost" onclick="document.getElementById('bpoInput').value=''">مسح</button>
+              <button class="btn btn-export" onclick="exportBPOToExcel()">
+                <svg class="btn-icon" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Export Excel
+              </button>
               <button class="btn btn-primary" onclick="extractBPO()">Extract</button>
             </div>
           </div>
