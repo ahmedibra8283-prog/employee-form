@@ -4,26 +4,25 @@
 const TABLE_EMP  = 'employees';
 const TABLE_PROJ = 'projects';
 
-// ─── DOM ─────────────────────────────────────────────────
-const empForm       = document.getElementById('employeeForm');
-const projForm      = document.getElementById('projectForm');
-const empTableBody  = document.getElementById('empTableBody');
-const projTableBody = document.getElementById('projTableBody');
-const empCount      = document.getElementById('empCount');
-const projCount     = document.getElementById('projCount');
-const navEmpCount   = document.getElementById('navEmpCount');
-const navProjCount  = document.getElementById('navProjCount');
-const empFormStatus = document.getElementById('empFormStatus');
-const projFormStatus= document.getElementById('projFormStatus');
-const submitBtn     = document.getElementById('submitBtn');
-const projSubmitBtn = document.getElementById('projSubmitBtn');
-const projectSelect = document.getElementById('project');
-const toast         = document.getElementById('toast');
-const toastMsg      = document.getElementById('toastMsg');
+const empForm        = document.getElementById('employeeForm');
+const projForm       = document.getElementById('projectForm');
+const empTableBody   = document.getElementById('empTableBody');
+const projTableBody  = document.getElementById('projTableBody');
+const empCount       = document.getElementById('empCount');
+const projCount      = document.getElementById('projCount');
+const navEmpCount    = document.getElementById('navEmpCount');
+const navProjCount   = document.getElementById('navProjCount');
+const empFormStatus  = document.getElementById('empFormStatus');
+const projFormStatus = document.getElementById('projFormStatus');
+const submitBtn      = document.getElementById('submitBtn');
+const projSubmitBtn  = document.getElementById('projSubmitBtn');
+const projectSelect  = document.getElementById('project');
+const toast          = document.getElementById('toast');
+const toastMsg       = document.getElementById('toastMsg');
 
 const empRequiredFields = ['employeeCode','fullName','department','jobTitle','basicSalary','joinDate','email','phone'];
 
-// ─── Tab switching ────────────────────────────────────────
+// ─── Tab ─────────────────────────────────────────────────
 function showTab(name, el) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -52,16 +51,14 @@ function showToast(msg) {
 
 // ─── Status ──────────────────────────────────────────────
 function setStatus(el, msg, type) {
-  el.textContent = msg;
-  el.className = `form-status ${type}`;
-  el.classList.remove('hidden');
+  el.textContent = msg; el.className = `form-status ${type}`; el.classList.remove('hidden');
   if (type === 'success') setTimeout(() => el.classList.add('hidden'), 4000);
 }
 function clearStatus(el) { el.classList.add('hidden'); }
 
 // ─── Validation ──────────────────────────────────────────
 function validateField(id, value) {
-  const errEl   = document.getElementById(`${id}-error`);
+  const errEl = document.getElementById(`${id}-error`);
   const inputEl = document.getElementById(id);
   if (!errEl) return true;
   let msg = '';
@@ -84,26 +81,25 @@ function formatDate(s) {
   if (!s) return '—';
   return new Date(s).toLocaleDateString('ar-SA', { year:'numeric', month:'short', day:'numeric' });
 }
+function fNum(v) { return v ? Number(v).toLocaleString() : '—'; }
 function escHtml(str) {
   const d = document.createElement('div');
   d.appendChild(document.createTextNode(str || ''));
   return d.innerHTML;
 }
+function gv(id) { return document.getElementById(id)?.value || null; }
+function gn(id) { const v = parseFloat(document.getElementById(id)?.value); return isNaN(v) ? null : v; }
 
 // ══════════════════════════════════════════════
 //  PROJECTS
 // ══════════════════════════════════════════════
 async function fetchProjects() {
   try {
-    const { data, error } = await window.supabaseClient
-      .from(TABLE_PROJ).select('*').order('name');
+    const { data, error } = await window.supabaseClient.from(TABLE_PROJ).select('*').order('name');
     if (error) throw error;
     const rows = data || [];
-
     projCount.textContent    = rows.length;
     navProjCount.textContent = rows.length;
-
-    // ملء dropdown الموظف
     const cur = projectSelect.value;
     projectSelect.innerHTML = '<option value="">— بدون مشروع —</option>';
     rows.forEach(p => {
@@ -112,56 +108,84 @@ async function fetchProjects() {
       if (p.name === cur) o.selected = true;
       projectSelect.appendChild(o);
     });
-
     renderProjTable(rows);
   } catch (err) { console.error(err); }
 }
 
 function renderProjTable(rows) {
   if (!rows.length) {
-    projTableBody.innerHTML = `<tr><td colspan="5"><div class="empty-state">
+    projTableBody.innerHTML = `<tr><td colspan="17"><div class="empty-state">
       <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
       <p>لا توجد مشاريع بعد</p></div></td></tr>`;
     return;
   }
   projTableBody.innerHTML = rows.map((p, i) => `<tr>
     <td>${i+1}</td>
+    <td>${escHtml(p.serial_number||'—')}</td>
+    <td><span class="code-tag">${escHtml(p.project_code||'—')}</span></td>
+    <td>${escHtml(p.abbreviation||'—')}</td>
     <td><span class="proj-tag">${escHtml(p.name)}</span></td>
-    <td style="color:var(--text2);max-width:300px;white-space:normal;">${escHtml(p.description||'—')}</td>
-    <td>${formatDate(p.created_at)}</td>
+    <td>${escHtml(p.oracle_name_01||'—')}</td>
+    <td>${escHtml(p.oracle_name_02||'—')}</td>
+    <td>${formatDate(p.bl_start_date)}</td>
+    <td>${formatDate(p.bl_finish_date)}</td>
+    <td>${formatDate(p.modified_bl_finish_date)}</td>
+    <td>${formatDate(p.as_of_date)}</td>
+    <td class="num-td">${fNum(p.contract_price)}</td>
+    <td class="num-td">${fNum(p.direct_budget)}</td>
+    <td class="num-td">${fNum(p.indirect_budget)}</td>
+    <td class="num-td">${p.overall_duration||'—'}</td>
+    <td><span class="progress-badge">${p.actual_progress!=null?p.actual_progress+'%':'—'}</span></td>
     <td><button class="btn-del" onclick="confirmDelete('${p.id}','${escHtml(p.name)}','project')">
       <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
     </button></td>
   </tr>`).join('');
 }
 
-// تسجيل مشروع
 projForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   clearStatus(projFormStatus);
+
   const name = document.getElementById('projectName').value.trim();
-  const desc = document.getElementById('projectDesc').value.trim();
-  const errEl = document.getElementById('projectName-error');
-  if (!name) {
-    errEl.textContent = 'مطلوب';
-    document.getElementById('projectName').classList.add('error');
-    return;
-  }
-  errEl.textContent = '';
-  document.getElementById('projectName').classList.remove('error');
+  const code = document.getElementById('projectCode').value.trim();
+  const nameErr = document.getElementById('projectName-error');
+  const codeErr = document.getElementById('projectCode-error');
+  let ok = true;
+  if (!name) { nameErr.textContent = 'مطلوب'; document.getElementById('projectName').classList.add('error'); ok = false; } else { nameErr.textContent = ''; document.getElementById('projectName').classList.remove('error'); }
+  if (!code) { codeErr.textContent = 'مطلوب'; document.getElementById('projectCode').classList.add('error'); ok = false; } else { codeErr.textContent = ''; document.getElementById('projectCode').classList.remove('error'); }
+  if (!ok) return;
 
   projSubmitBtn.disabled = true;
   projSubmitBtn.querySelector('.btn-text').textContent = 'جاري الحفظ...';
+
+  const payload = {
+    name,
+    serial_number:          gv('serialNumber'),
+    project_code:           code,
+    abbreviation:           gv('abbreviation'),
+    oracle_name_01:         gv('oracleName01'),
+    oracle_name_02:         gv('oracleName02'),
+    description:            gv('projectDesc'),
+    bl_start_date:          gv('blStartDate'),
+    bl_finish_date:         gv('blFinishDate'),
+    modified_bl_finish_date:gv('modifiedBlFinishDate'),
+    as_of_date:             gv('asOfDate'),
+    contract_price:         gn('contractPrice'),
+    direct_budget:          gn('directBudget'),
+    indirect_budget:        gn('indirectBudget'),
+    overall_duration:       gn('overallDuration'),
+    actual_progress:        gn('actualProgress'),
+  };
+
   try {
-    const { error } = await window.supabaseClient
-      .from(TABLE_PROJ).insert([{ name, description: desc || null }]);
+    const { error } = await window.supabaseClient.from(TABLE_PROJ).insert([payload]);
     if (error) throw error;
     projForm.reset();
     setStatus(projFormStatus, '✅ تم حفظ المشروع بنجاح!', 'success');
     showToast(`تم إضافة "${name}"`);
     await fetchProjects();
   } catch (err) {
-    const msg = err.code === '23505' ? '⚠️ اسم المشروع موجود مسبقاً' : `❌ ${err.message}`;
+    const msg = err.code === '23505' ? '⚠️ اسم أو كود المشروع موجود مسبقاً' : `❌ ${err.message}`;
     setStatus(projFormStatus, msg, 'error');
   } finally {
     projSubmitBtn.disabled = false;
@@ -170,8 +194,10 @@ projForm.addEventListener('submit', async (e) => {
 });
 
 document.getElementById('resetProjBtn').addEventListener('click', () => {
-  document.getElementById('projectName').classList.remove('error');
-  document.getElementById('projectName-error').textContent = '';
+  ['projectName','projectCode'].forEach(id => {
+    document.getElementById(id).classList.remove('error');
+    document.getElementById(`${id}-error`).textContent = '';
+  });
   clearStatus(projFormStatus);
 });
 
@@ -180,8 +206,7 @@ document.getElementById('resetProjBtn').addEventListener('click', () => {
 // ══════════════════════════════════════════════
 async function fetchEmployees() {
   try {
-    const { data, error } = await window.supabaseClient
-      .from(TABLE_EMP).select('*').order('created_at', { ascending: false });
+    const { data, error } = await window.supabaseClient.from(TABLE_EMP).select('*').order('created_at', { ascending: false });
     if (error) throw error;
     renderEmpTable(data || []);
   } catch (err) { console.error(err); renderEmpTable([]); }
@@ -203,8 +228,8 @@ function renderEmpTable(rows) {
     <td><span class="dept-tag">${escHtml(r.department)}</span></td>
     <td>${escHtml(r.job_title)}</td>
     <td>${r.project?`<span class="proj-tag">${escHtml(r.project)}</span>`:'—'}</td>
-    <td class="num-td">${r.basic_salary?Number(r.basic_salary).toLocaleString():'—'}</td>
-    <td class="num-td">${r.total_salary?Number(r.total_salary).toLocaleString():'—'}</td>
+    <td class="num-td">${fNum(r.basic_salary)}</td>
+    <td class="num-td">${fNum(r.total_salary)}</td>
     <td>${formatDate(r.join_date)}</td>
     <td>${r.resignation_date?formatDate(r.resignation_date):'<span class="active-tag">مازال</span>'}</td>
     <td>${escHtml(r.email)}</td>
@@ -216,7 +241,6 @@ empForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   clearStatus(empFormStatus);
   if (!validateAll(empRequiredFields)) return;
-
   const basic = parseFloat(document.getElementById('basicSalary').value) || 0;
   const payload = {
     employee_code:    document.getElementById('employeeCode').value.trim(),
@@ -231,7 +255,6 @@ empForm.addEventListener('submit', async (e) => {
     email:            document.getElementById('email').value.trim().toLowerCase(),
     phone:            document.getElementById('phone').value.trim(),
   };
-
   submitBtn.disabled = true;
   submitBtn.querySelector('.btn-text').textContent = 'جاري الحفظ...';
   try {
@@ -239,17 +262,12 @@ empForm.addEventListener('submit', async (e) => {
     if (error) throw error;
     empForm.reset();
     document.getElementById('totalSalary').value = '';
-    empRequiredFields.forEach(id => {
-      document.getElementById(id)?.classList.remove('error');
-      const err = document.getElementById(`${id}-error`);
-      if (err) err.textContent = '';
-    });
+    empRequiredFields.forEach(id => { document.getElementById(id)?.classList.remove('error'); const err=document.getElementById(`${id}-error`); if(err) err.textContent=''; });
     setStatus(empFormStatus, '✅ تم حفظ بيانات الموظف بنجاح!', 'success');
     showToast('تم حفظ الموظف بنجاح');
     await fetchEmployees();
   } catch (err) {
-    const msg = err.code === '23505' ? '⚠️ البريد الإلكتروني مسجل مسبقاً' : `❌ ${err.message}`;
-    setStatus(empFormStatus, msg, 'error');
+    setStatus(empFormStatus, err.code==='23505'?'⚠️ البريد مسجل مسبقاً':`❌ ${err.message}`, 'error');
   } finally {
     submitBtn.disabled = false;
     submitBtn.querySelector('.btn-text').textContent = 'حفظ الموظف';
@@ -257,11 +275,7 @@ empForm.addEventListener('submit', async (e) => {
 });
 
 document.getElementById('resetBtn').addEventListener('click', () => {
-  empRequiredFields.forEach(id => {
-    document.getElementById(id)?.classList.remove('error');
-    const err = document.getElementById(`${id}-error`);
-    if (err) err.textContent = '';
-  });
+  empRequiredFields.forEach(id => { document.getElementById(id)?.classList.remove('error'); const err=document.getElementById(`${id}-error`); if(err) err.textContent=''; });
   document.getElementById('totalSalary').value = '';
   clearStatus(empFormStatus);
 });
@@ -274,7 +288,7 @@ empRequiredFields.forEach(id => {
 });
 
 // ══════════════════════════════════════════════
-//  CONFIRM DELETE
+//  DELETE
 // ══════════════════════════════════════════════
 let pendingDelete = null;
 function confirmDelete(id, name, type) {
@@ -285,14 +299,12 @@ function confirmDelete(id, name, type) {
 document.getElementById('confirmOkBtn').addEventListener('click', async () => {
   if (!pendingDelete) return;
   closeConfirm();
-  const table = pendingDelete.type === 'project' ? TABLE_PROJ : TABLE_EMP;
   try {
-    const { error } = await window.supabaseClient.from(table).delete().eq('id', pendingDelete.id);
+    const { error } = await window.supabaseClient.from(pendingDelete.type==='project'?TABLE_PROJ:TABLE_EMP).delete().eq('id', pendingDelete.id);
     if (error) throw error;
     showToast('تم الحذف بنجاح');
-    if (pendingDelete.type === 'project') await fetchProjects();
-    else await fetchEmployees();
-  } catch (err) { showToast('❌ خطأ في الحذف'); }
+    if (pendingDelete.type==='project') await fetchProjects(); else await fetchEmployees();
+  } catch { showToast('❌ خطأ في الحذف'); }
   pendingDelete = null;
 });
 function closeConfirm() { document.getElementById('confirmOverlay').classList.add('hidden'); }
@@ -301,23 +313,25 @@ function closeConfirm() { document.getElementById('confirmOverlay').classList.ad
 //  EXPORT
 // ══════════════════════════════════════════════
 async function exportToExcel() {
-  const { data, error } = await window.supabaseClient
-    .from(TABLE_EMP).select('*').order('created_at', { ascending: false });
-  if (error || !data?.length) { showToast('لا توجد بيانات!'); return; }
-  const headers = ['#','الكود','الاسم','القسم','المسمى','المشروع','الراتب الأساسي','الراتب الشامل','تاريخ الانضمام','تاريخ الاستقالة','البريد','الهاتف'];
+  const { data } = await window.supabaseClient.from(TABLE_EMP).select('*').order('created_at',{ascending:false});
+  if (!data?.length) { showToast('لا توجد بيانات!'); return; }
+  const headers=['#','الكود','الاسم','القسم','المسمى','المشروع','الراتب الأساسي','الراتب الشامل','تاريخ الانضمام','تاريخ الاستقالة','البريد','الهاتف'];
+  buildExcel(headers, data.map((r,i)=>[i+1,r.employee_code||'—',r.full_name,r.department,r.job_title,r.project||'—',fNum(r.basic_salary),fNum(r.total_salary),formatDate(r.join_date),r.resignation_date?formatDate(r.resignation_date):'مازال',r.email,r.phone]), 'employees.xls', 'الموظفون');
+}
+
+async function exportProjectsToExcel() {
+  const { data } = await window.supabaseClient.from(TABLE_PROJ).select('*').order('name');
+  if (!data?.length) { showToast('لا توجد مشاريع!'); return; }
+  const headers=['#','S.N.','Project Code','Abbreviation','اسم المشروع','Oracle 01','Oracle 02','BL Start','BL Finish','Modified BL','As of','Contract Price','Direct Budget','Indirect Budget','Duration','% Progress'];
+  buildExcel(headers, data.map((p,i)=>[i+1,p.serial_number||'—',p.project_code||'—',p.abbreviation||'—',p.name,p.oracle_name_01||'—',p.oracle_name_02||'—',formatDate(p.bl_start_date),formatDate(p.bl_finish_date),formatDate(p.modified_bl_finish_date),formatDate(p.as_of_date),fNum(p.contract_price),fNum(p.direct_budget),fNum(p.indirect_budget),p.overall_duration||'—',p.actual_progress!=null?p.actual_progress+'%':'—']), 'projects.xls', 'المشاريع');
+}
+
+function buildExcel(headers, rows, filename, sheetName) {
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const hRow = headers.map(h=>`<th style="background:#1E3A5F;color:#fff;font-weight:bold;padding:8px;border:1px solid #fff;text-align:center;white-space:nowrap;">${esc(h)}</th>`).join('');
-  const dRows = data.map((r,i)=>{
-    const bg=i%2===0?'#F7F9FC':'#fff';
-    const vals=[i+1,r.employee_code||'—',r.full_name,r.department,r.job_title,r.project||'—',
-      r.basic_salary?Number(r.basic_salary).toLocaleString():'—',
-      r.total_salary?Number(r.total_salary).toLocaleString():'—',
-      formatDate(r.join_date),r.resignation_date?formatDate(r.resignation_date):'مازال',r.email,r.phone];
-    return `<tr>${vals.map((v,ci)=>`<td style="background:${ci===0?'#EEF2F7':bg};padding:6px 10px;border:1px solid #D4E0EF;text-align:${ci===0?'center':'right'};font-size:11px;white-space:nowrap;">${esc(v)}</td>`).join('')}</tr>`;
-  }).join('');
-  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>الموظفون</x:Name><x:WorksheetOptions><x:DisplayRightToLeft/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table style="border-collapse:collapse;font-family:Arial;direction:rtl;"><thead><tr>${hRow}</tr></thead><tbody>${dRows}</tbody></table></body></html>`;
-  const blob=new Blob(['\uFEFF'+html],{type:'application/vnd.ms-excel;charset=utf-8'});
-  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'employees.xls'});
+  const dRows = rows.map((r,i)=>{const bg=i%2===0?'#F7F9FC':'#fff';return`<tr>${r.map((v,ci)=>`<td style="background:${ci===0?'#EEF2F7':bg};padding:6px 10px;border:1px solid #D4E0EF;text-align:${ci===0?'center':'right'};font-size:11px;white-space:nowrap;">${esc(v)}</td>`).join('')}</tr>`;}).join('');
+  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>${sheetName}</x:Name><x:WorksheetOptions><x:DisplayRightToLeft/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table style="border-collapse:collapse;font-family:Arial;direction:rtl;"><thead><tr>${hRow}</tr></thead><tbody>${dRows}</tbody></table></body></html>`;
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob(['\uFEFF'+html],{type:'application/vnd.ms-excel;charset=utf-8'})),download:filename});
   a.click();URL.revokeObjectURL(a.href);
   showToast('تم التصدير! ✅');
 }
