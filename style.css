@@ -420,16 +420,75 @@ tbody td:first-child { color: var(--muted); font-weight: 700; font-size: .75rem;
   .form-actions { flex-direction: column-reverse; }
   .btn { justify-content: center; }
 }
+
+/* ===== EXPORT BUTTON ===== */
 .btn-export {
   margin-right: auto;
   background: #1D6F42;
   color: white;
   font-size: .8rem;
-  padding: 8px 18px;
+  padding: 8px 16px;
   border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
   font-family: 'Cairo', sans-serif;
   font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background var(--transition);
 }
 .btn-export:hover { background: #155233; }
+.btn-export .btn-icon { width: 16px; height: 16px; fill: white; }
+
+/* ===== SECTION TITLES ===== */
+.section-title {
+  font-size: .8rem;
+  font-weight: 900;
+  color: var(--navy);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 20px 28px 8px;
+  margin: 0 -28px;
+  border-top: 1px solid var(--border);
+  margin-top: 16px;
+  background: linear-gradient(135deg, rgba(30,58,95,.03), transparent);
+}
+.section-title:first-of-type { border-top: none; margin-top: 0; }
+
+/* ===== FIELD NOTE ===== */
+.note {
+  font-size: .72rem;
+  color: var(--muted);
+  font-weight: 400;
+  margin-right: 4px;
+}
+
+/* ===== TABLE EXTRAS ===== */
+.num-cell { font-weight: 700; color: var(--navy-light); direction: ltr; text-align: left; }
+.code-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--gold-dim);
+  color: var(--gold);
+  border-radius: 100px;
+  font-size: .75rem;
+  font-weight: 700;
+  border: 1px solid rgba(201,168,76,.3);
+}
+.active-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  background: rgba(61,153,112,.1);
+  color: #3D9970;
+  border-radius: 100px;
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+input[readonly] {
+  background: rgba(30,58,95,.04) !important;
+  color: var(--navy-light);
+  font-weight: 700;
+  cursor: not-allowed;
+}
