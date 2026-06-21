@@ -43,9 +43,9 @@ body {
    LAYOUT
 ═══════════════════════════════════════════════ */
 .app-layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 220px;
   min-height: 100vh;
-  position: relative;
 }
 
 /* ═══════════════════════════════════════════════
@@ -53,7 +53,6 @@ body {
 ═══════════════════════════════════════════════ */
 .sidebar {
   width: 220px;
-  flex-shrink: 0;
   background: var(--navy-dk);
   display: flex;
   flex-direction: column;
@@ -123,14 +122,10 @@ body {
    MAIN CONTENT
 ═══════════════════════════════════════════════ */
 .main-content {
-  flex: 1;
-  padding-right: 240px;
-  padding-left: 28px;
-  padding-top: 24px;
-  padding-bottom: 24px;
+  margin-right: 220px;
+  padding: 24px 28px;
   min-height: 100vh;
   box-sizing: border-box;
-  width: 100%;
 }
 
 .tab-panel { display: none; }
@@ -609,4 +604,17 @@ tbody td:first-child { color: var(--muted); font-weight: 700; font-size: .7rem; 
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 12px;
+}
+
+/* ═══ REMOVE TOP SPACE ═══ */
+#tab-bpo-tool {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+#tab-bpo-tool .page-header {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+.main-content {
+  padding-top: 16px !important;
 }
