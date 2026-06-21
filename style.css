@@ -40,6 +40,7 @@ body {
 .app-layout {
   display: flex;
   min-height: 100vh;
+  position: relative;
 }
 
 /* ═══════════════════════════════════════════════
@@ -52,7 +53,7 @@ body {
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 0; left: 0; bottom: 0;
+  top: 0; right: 0; bottom: 0;
   z-index: 100;
 }
 
@@ -118,10 +119,11 @@ body {
 ═══════════════════════════════════════════════ */
 .main-content {
   flex: 1;
-  margin-left: 220px;
-  margin-right: 0;
-  padding: 28px 32px;
+  margin-right: 220px;
+  margin-left: 0;
+  padding: 24px 28px;
   min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .tab-panel { display: none; }
@@ -404,7 +406,7 @@ tbody td:first-child { color: var(--muted); font-weight: 700; font-size: .7rem; 
   .sidebar-brand { justify-content: center; padding: 16px 0; }
   .nav-item { justify-content: center; padding: 12px; }
   .nav-badge { display: none; }
-  .main-content { margin-left: 60px; margin-right: 0; padding: 20px 16px; }
+  .main-content { margin-right: 60px; margin-left: 0; padding: 20px 16px; }
   .field.sm { flex: 1; min-width: 140px; }
 }
 
