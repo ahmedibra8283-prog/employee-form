@@ -381,11 +381,16 @@ function copyBPO(elId, label) {
 
 // ─── Export BPO to Excel ──────────────────────────────────
 function exportBPOToExcel() {
+  // تشغيل Extract تلقائياً لو مفيش داتا
+  const inputText = document.getElementById('bpoInput').value.trim();
+  if (!inputText) { showToast('الصق النص أولاً!'); return; }
+  extractBPO();
+
   const numbers = document.getElementById('bpoOutput').value;
   const lines   = document.getElementById('poOutput').value;
 
   if (!numbers || numbers === 'No numbers found.') {
-    showToast('اضغط Extract أولاً!');
+    showToast('لم يتم العثور على أرقام!');
     return;
   }
 
