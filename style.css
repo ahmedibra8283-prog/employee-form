@@ -553,3 +553,14 @@ tbody td:first-child { color: var(--muted); font-weight: 700; font-size: .7rem; 
 @media (max-width: 768px) {
   #tab-bpo-tool .bpo-grid { grid-template-columns: 1fr; }
 }
+
+/* ═══ BPO LAYOUT ═══ */
+.bpo-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#tab-bpo-tool .page-header {
+  margin-bottom: 12px;
+  padding-bottom: 0;
+}
