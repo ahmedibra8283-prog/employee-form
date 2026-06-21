@@ -406,3 +406,71 @@ tbody td:first-child { color: var(--muted); font-weight: 700; font-size: .7rem; 
   .main-content { margin-right: 60px; padding: 20px 16px; }
   .field.sm { flex: 1; min-width: 140px; }
 }
+
+/* ═══ TWO COL LAYOUT ═══ */
+.two-col {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ═══ PROJECT BADGE ═══ */
+.proj-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(42,80,130,.1);
+  color: var(--navy2);
+  border-radius: 4px;
+  font-size: .68rem;
+  font-weight: 700;
+}
+
+/* ═══ DELETE BUTTON ═══ */
+.btn-del {
+  background: rgba(224,82,82,.08);
+  border: 1px solid rgba(224,82,82,.2);
+  color: var(--error);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: all var(--tr);
+}
+.btn-del:hover { background: rgba(224,82,82,.15); }
+.btn-del svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* ═══ DANGER BUTTON ═══ */
+.btn-danger {
+  background: var(--error);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 20px;
+  font-family: 'Cairo', sans-serif;
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--tr);
+}
+.btn-danger:hover { background: #c94444; }
+
+/* ═══ CONFIRM OVERLAY ═══ */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 500;
+  display: grid; place-items: center;
+  backdrop-filter: blur(2px);
+}
+.confirm-box {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  box-shadow: var(--shadow-md);
+  min-width: 300px;
+  text-align: center;
+}
+.confirm-box p { font-weight: 700; color: var(--navy); font-size: .95rem; }
