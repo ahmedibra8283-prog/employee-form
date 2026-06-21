@@ -520,3 +520,36 @@ tbody td:first-child { color: var(--muted); font-weight: 700; font-size: .7rem; 
   font-size: .7rem;
   font-weight: 700;
 }
+
+/* ═══ BPO TOOL ═══ */
+.bpo-out {
+  min-height: 120px;
+  height: auto;
+  resize: none;
+  overflow: hidden;
+  white-space: pre;
+  word-break: break-all;
+  font-family: 'Courier New', monospace;
+  font-size: .82rem;
+  line-height: 1.6;
+}
+
+/* ═══ BPO TOOL LAYOUT FIX ═══ */
+#tab-bpo-tool .form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#tab-bpo-tool .bpo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+#tab-bpo-tool textarea#bpoInput {
+  min-height: 160px;
+  height: 160px;
+  resize: vertical;
+}
+@media (max-width: 768px) {
+  #tab-bpo-tool .bpo-grid { grid-template-columns: 1fr; }
+}
