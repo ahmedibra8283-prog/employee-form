@@ -34,13 +34,16 @@
       </div>
 
       <form id="employeeForm" novalidate>
+
+        <!-- ─── القسم الأول: بيانات أساسية ─── -->
+        <div class="section-title">البيانات الأساسية</div>
         <div class="form-grid">
 
           <div class="field">
             <label for="employeeCode">كود الموظف <span class="required">*</span></label>
             <div class="input-wrap">
               <svg class="field-icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
-              <input type="text" id="employeeCode" name="employeeCode" placeholder="EMP-001" required />
+              <input type="text" id="employeeCode" placeholder="EMP-001" required />
             </div>
             <span class="field-error" id="employeeCode-error"></span>
           </div>
@@ -49,42 +52,24 @@
             <label for="fullName">الاسم الكامل <span class="required">*</span></label>
             <div class="input-wrap">
               <svg class="field-icon" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-              <input type="text" id="fullName" name="fullName" placeholder="محمد أحمد العلي" required />
+              <input type="text" id="fullName" placeholder="محمد أحمد العلي" required />
             </div>
             <span class="field-error" id="fullName-error"></span>
           </div>
 
           <div class="field">
-            <label for="email">البريد الإلكتروني <span class="required">*</span></label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-              <input type="email" id="email" name="email" placeholder="mohammed@company.com" required />
-            </div>
-            <span class="field-error" id="email-error"></span>
-          </div>
-
-          <div class="field">
-            <label for="phone">رقم الهاتف <span class="required">*</span></label>
-            <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
-              <input type="tel" id="phone" name="phone" placeholder="+966 5X XXX XXXX" required />
-            </div>
-            <span class="field-error" id="phone-error"></span>
-          </div>
-
-          <div class="field">
             <label for="department">القسم <span class="required">*</span></label>
             <div class="input-wrap select-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
-              <select id="department" name="department" required>
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12z"/></svg>
+              <select id="department" required>
                 <option value="" disabled selected>اختر القسم</option>
-                <option value="تقنية المعلومات">تقنية المعلومات</option>
-                <option value="الموارد البشرية">الموارد البشرية</option>
-                <option value="المالية والمحاسبة">المالية والمحاسبة</option>
-                <option value="التسويق">التسويق</option>
-                <option value="المبيعات">المبيعات</option>
-                <option value="العمليات">العمليات</option>
-                <option value="خدمة العملاء">خدمة العملاء</option>
+                <option>تقنية المعلومات</option>
+                <option>الموارد البشرية</option>
+                <option>المالية والمحاسبة</option>
+                <option>التسويق</option>
+                <option>المبيعات</option>
+                <option>العمليات</option>
+                <option>خدمة العملاء</option>
               </select>
               <svg class="select-arrow" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
             </div>
@@ -94,10 +79,88 @@
           <div class="field">
             <label for="jobTitle">المسمى الوظيفي <span class="required">*</span></label>
             <div class="input-wrap">
-              <svg class="field-icon" viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.86.18-1.3C18 2.1 15.9 0 13.3 0c-1.4 0-2.6.6-3.4 1.5L9 3 8.1 1.6C7.3.6 6.1 0 4.7 0 2.1 0 0 2.1 0 4.7c0 .44.11.86.18 1.3H0v2h20V6zM4.7 4c-.72 0-1.3-.58-1.3-1.3 0-.72.58-1.3 1.3-1.3.41 0 .77.19 1.01.5L7 3.4C6.53 3.8 5.67 4 4.7 4zm8.6 0c-.97 0-1.83-.2-2.3-.6l1.29-1.2c.24-.31.6-.5 1.01-.5.72 0 1.3.58 1.3 1.3 0 .72-.58 1.3-1.3 1.3zM2 8v14h8v-5h4v5h8V8H2z"/></svg>
-              <input type="text" id="jobTitle" name="jobTitle" placeholder="مهندس برمجيات أول" required />
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.86.18-1.3C18 2.1 15.9 0 13.3 0c-1.4 0-2.6.6-3.4 1.5L9 3 8.1 1.6C7.3.6 6.1 0 4.7 0 2.1 0 0 2.1 0 4.7c0 .44.11.86.18 1.3H0v2h20V6zM2 8v14h8v-5h4v5h8V8H2z"/></svg>
+              <input type="text" id="jobTitle" placeholder="مهندس برمجيات أول" required />
             </div>
             <span class="field-error" id="jobTitle-error"></span>
+          </div>
+
+          <div class="field">
+            <label for="project">المشروع</label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+              <input type="text" id="project" placeholder="مدخل" />
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ─── القسم الثاني: الراتب ─── -->
+        <div class="section-title">الراتب</div>
+        <div class="form-grid">
+
+          <div class="field">
+            <label for="basicSalary">الراتب الأساسي <span class="required">*</span></label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+              <input type="number" id="basicSalary" placeholder="0.00" min="0" required />
+            </div>
+            <span class="field-error" id="basicSalary-error"></span>
+          </div>
+
+          <div class="field">
+            <label for="totalSalary">الراتب الشامل <span class="note">(الراتب الأساسي × 1.35)</span></label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+              <input type="number" id="totalSalary" placeholder="ناتج ضرب الراتب الأساسي × 1.35" readonly />
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ─── القسم الثالث: التواريخ ─── -->
+        <div class="section-title">التواريخ</div>
+        <div class="form-grid">
+
+          <div class="field">
+            <label for="joinDate">تاريخ الانضمام <span class="required">*</span></label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+              <input type="date" id="joinDate" required />
+            </div>
+            <span class="field-error" id="joinDate-error"></span>
+          </div>
+
+          <div class="field">
+            <label for="resignationDate">تاريخ الاستقالة <span class="note">(اختياري / مازال في الشركة)</span></label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+              <input type="date" id="resignationDate" />
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ─── القسم الرابع: معلومات التواصل ─── -->
+        <div class="section-title">معلومات التواصل</div>
+        <div class="form-grid">
+
+          <div class="field">
+            <label for="email">البريد الإلكتروني <span class="required">*</span></label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <input type="email" id="email" placeholder="mohammed@company.com" required />
+            </div>
+            <span class="field-error" id="email-error"></span>
+          </div>
+
+          <div class="field">
+            <label for="phone">رقم الهاتف <span class="required">*</span></label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+              <input type="tel" id="phone" placeholder="+966 5X XXX XXXX" required />
+            </div>
+            <span class="field-error" id="phone-error"></span>
           </div>
 
         </div>
@@ -129,18 +192,22 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>كود الموظف</th>
+              <th>الكود</th>
               <th>الاسم</th>
+              <th>القسم</th>
+              <th>المسمى</th>
+              <th>المشروع</th>
+              <th>الراتب الأساسي</th>
+              <th>الراتب الشامل</th>
+              <th>تاريخ الانضمام</th>
+              <th>تاريخ الاستقالة</th>
               <th>البريد</th>
               <th>الهاتف</th>
-              <th>القسم</th>
-              <th>المسمى الوظيفي</th>
-              <th>تاريخ التسجيل</th>
             </tr>
           </thead>
           <tbody id="tableBody">
             <tr class="empty-row">
-              <td colspan="8">
+              <td colspan="12">
                 <div class="empty-state">
                   <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
                   <p>لا توجد سجلات بعد. أضف أول موظف!</p>
