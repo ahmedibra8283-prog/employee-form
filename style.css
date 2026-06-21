@@ -31,7 +31,12 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
+  direction: ltr;
+}
+
+.main-content, form, .form-section, .page-header, label, input, select, textarea, table, th, td, p, h1, h2, span {
   direction: rtl;
+  text-align: right;
 }
 
 /* ═══════════════════════════════════════════════
