@@ -340,3 +340,29 @@ function buildExcel(headers, rows, filename, sheetName) {
 //  INIT
 // ══════════════════════════════════════════════
 (async () => { await Promise.all([fetchEmployees(), fetchProjects()]); })();
+
+// ══════════════════════════════════════════════
+//  BPO / PO EXTRACTOR
+// ══════════════════════════════════════════════
+function extractBPO() {
+  const text = document.getElementById('bpoInput').value;
+  const poLines = text.match(/Approve.*?(BPO|BPR)\d+/gm) || [];
+  const bpoLines = poLines.map(line => {
+    const match = line.match(/(BPO|BPR)\d+/);
+    return match ? match[0] : '';
+  }).filter(Boolean);
+
+  document.getElementById('bpoOutput').value =
+    bpoLines.length ? [...new Set(bpoLines)].join('\n') : 'No numbers found.';
+  document.getElementById('poOutput').value =
+    poLines.length ? [...new Set(poLines)].join('\n') : 'No lines found.';
+}
+
+function copyBPO(elId, label) {
+  const val = document.getElementById(elId).value;
+  if (!val || val === 'No numbers found.' || val === 'No lines found.') {
+    showToast('لا توجد بيانات للنسخ!');
+    return;
+  }
+  navigator.clipboard.writeText(val).then(() => showToast(`✅ تم نسخ ${label}!`));
+}
