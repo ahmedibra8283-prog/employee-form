@@ -52,7 +52,7 @@ body {
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 0; right: 0; bottom: 0;
+  top: 0; left: 0; bottom: 0;
   z-index: 100;
 }
 
@@ -118,7 +118,8 @@ body {
 ═══════════════════════════════════════════════ */
 .main-content {
   flex: 1;
-  margin-right: 220px;
+  margin-left: 220px;
+  margin-right: 0;
   padding: 28px 32px;
   min-height: 100vh;
 }
@@ -403,7 +404,7 @@ tbody td:first-child { color: var(--muted); font-weight: 700; font-size: .7rem; 
   .sidebar-brand { justify-content: center; padding: 16px 0; }
   .nav-item { justify-content: center; padding: 12px; }
   .nav-badge { display: none; }
-  .main-content { margin-right: 60px; padding: 20px 16px; }
+  .main-content { margin-left: 60px; margin-right: 0; padding: 20px 16px; }
   .field.sm { flex: 1; min-width: 140px; }
 }
 
