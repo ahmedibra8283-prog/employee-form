@@ -118,7 +118,7 @@ body {
 .main-content {
   flex: 1;
   margin-right: 220px;
-  padding: 28px 32px;
+  padding: 16px 24px;
   min-height: 100vh;
 }
 
@@ -533,82 +533,12 @@ tbody td:first-child { color: var(--muted); font-weight: 700; font-size: .7rem; 
   line-height: 1.6;
 }
 
-/* ═══ BPO TOOL LAYOUT FIX ═══ */
-#tab-bpo-tool .form-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-#tab-bpo-tool .bpo-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-#tab-bpo-tool textarea#bpoInput {
-  min-height: 160px;
-  height: 160px;
-  resize: vertical;
-}
-@media (max-width: 768px) {
-  #tab-bpo-tool .bpo-grid { grid-template-columns: 1fr; }
-}
 
-/* ═══ BPO LAYOUT ═══ */
-.bpo-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-#tab-bpo-tool .page-header {
-  margin-bottom: 12px;
-  padding-bottom: 0;
-}
-
-/* ═══ FIX BLANK SPACE ═══ */
-#tab-bpo-tool .page-header {
-  padding: 0;
-  margin-bottom: 12px;
-  min-height: unset;
-}
-#tab-bpo-tool .page-title { font-size: 1rem; }
-#tab-bpo-tool .page-sub   { font-size: .72rem; }
-
-/* Make input textarea smaller */
-#bpoInput {
-  min-height: 80px !important;
-  height: 80px !important;
-}
-
-/* Make output textareas smaller */
-#bpoOutput, #poOutput {
-  min-height: 80px !important;
-  height: 80px !important;
-}
-
-/* ═══ BPO WRAPPER - centered with margins ═══ */
+/* ═══ BPO TOOL ═══ */
 .bpo-wrapper {
-  max-width: 780px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-#tab-bpo-tool .page-header {
-  max-width: 780px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 12px;
-}
-
-/* ═══ REMOVE TOP SPACE ═══ */
-#tab-bpo-tool {
-  padding-top: 0 !important;
-  margin-top: 0 !important;
-}
-#tab-bpo-tool .page-header {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-.main-content {
-  padding-top: 16px !important;
-}
+#bpoInput { height: 90px !important; resize: vertical; }
+#bpoOutput, #poOutput { height: 70px !important; font-family: monospace; font-size: .8rem; }
