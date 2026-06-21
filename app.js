@@ -1,26 +1,35 @@
 // ============================================================
 //  app.js
 // ============================================================
-const TABLE_NAME = 'employees';
+const TABLE_EMP  = 'employees';
+const TABLE_PROJ = 'projects';
 
-const form        = document.getElementById('employeeForm');
-const tableBody   = document.getElementById('tableBody');
-const recordCount = document.getElementById('recordCount');
-const navCount    = document.getElementById('navCount');
-const submitBtn   = document.getElementById('submitBtn');
-const resetBtn    = document.getElementById('resetBtn');
-const formStatus  = document.getElementById('formStatus');
-const toast       = document.getElementById('toast');
-const toastMsg    = document.getElementById('toastMsg');
+// ─── DOM refs ────────────────────────────────────────────
+const form             = document.getElementById('employeeForm');
+const tableBody        = document.getElementById('tableBody');
+const projectsTableBody= document.getElementById('projectsTableBody');
+const recordCount      = document.getElementById('recordCount');
+const projectCount     = document.getElementById('projectCount');
+const navCount         = document.getElementById('navCount');
+const navProjectCount  = document.getElementById('navProjectCount');
+const submitBtn        = document.getElementById('submitBtn');
+const resetBtn         = document.getElementById('resetBtn');
+const formStatus       = document.getElementById('formStatus');
+const projectForm      = document.getElementById('projectForm');
+const projectSubmitBtn = document.getElementById('projectSubmitBtn');
+const projectFormStatus= document.getElementById('projectFormStatus');
+const projectSelect    = document.getElementById('project');
+const toast            = document.getElementById('toast');
+const toastMsg         = document.getElementById('toastMsg');
 
 const requiredFields = ['employeeCode','fullName','department','jobTitle','basicSalary','joinDate','email','phone'];
 
 // ─── Tab switching ────────────────────────────────────────
-function showTab(name) {
+function showTab(name, el) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  event.currentTarget.classList.add('active');
+  if (el) el.classList.add('active');
 }
 
 // ─── Auto salary ─────────────────────────────────────────
@@ -43,13 +52,13 @@ function showToast(msg) {
 }
 
 // ─── Status ──────────────────────────────────────────────
-function setStatus(msg, type) {
-  formStatus.textContent = msg;
-  formStatus.className = `form-status ${type}`;
-  formStatus.classList.remove('hidden');
-  if (type === 'success') setTimeout(() => formStatus.classList.add('hidden'), 4000);
+function setStatus(el, msg, type) {
+  el.textContent = msg;
+  el.className = `form-status ${type}`;
+  el.classList.remove('hidden');
+  if (type === 'success') setTimeout(() => el.classList.add('hidden'), 4000);
 }
-function clearStatus() { formStatus.classList.add('hidden'); }
+function clearStatus(el) { el.classList.add('hidden'); }
 
 // ─── Validation ──────────────────────────────────────────
 function validateField(id, value) {
@@ -71,7 +80,7 @@ function validateAll() {
   return ok;
 }
 
-// ─── Format ──────────────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────
 function formatDate(s) {
   if (!s) return '—';
   return new Date(s).toLocaleDateString('ar-SA', { year:'numeric', month:'short', day:'numeric' });
@@ -82,12 +91,129 @@ function escHtml(str) {
   return d.innerHTML;
 }
 
-// ─── Render table ────────────────────────────────────────
+// ═══════════════════════════════════════════════
+//  PROJECTS
+// ═══════════════════════════════════════════════
+
+// جلب المشاريع وملء الـ dropdown
+async function fetchProjects() {
+  try {
+    const { data, error } = await window.supabaseClient
+      .from(TABLE_PROJ).select('*').order('name');
+    if (error) throw error;
+    const projects = data || [];
+
+    // تحديث العداد
+    projectCount.textContent    = projects.length;
+    navProjectCount.textContent = projects.length;
+
+    // ملء الـ dropdown في فورم الموظفين
+    const current = projectSelect.value;
+    projectSelect.innerHTML = '<option value="">— بدون مشروع —</option>';
+    projects.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.name;
+      opt.textContent = p.name;
+      if (p.name === current) opt.selected = true;
+      projectSelect.appendChild(opt);
+    });
+
+    // رسم جدول المشاريع
+    renderProjectsTable(projects);
+  } catch (err) {
+    console.error('خطأ في جلب المشاريع:', err);
+  }
+}
+
+function renderProjectsTable(rows) {
+  if (!rows.length) {
+    projectsTableBody.innerHTML = `<tr><td colspan="5"><div class="empty-state">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+      <p>لا توجد مشاريع بعد</p></div></td></tr>`;
+    return;
+  }
+  projectsTableBody.innerHTML = rows.map((p, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td><span class="proj-tag">${escHtml(p.name)}</span></td>
+      <td style="color:var(--text2);max-width:260px;white-space:normal;">${escHtml(p.description || '—')}</td>
+      <td>${formatDate(p.created_at)}</td>
+      <td>
+        <button class="btn-del" onclick="deleteProject('${p.id}', '${escHtml(p.name)}')">
+          <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </button>
+      </td>
+    </tr>`).join('');
+}
+
+// إضافة مشروع
+projectForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearStatus(projectFormStatus);
+  const name = document.getElementById('projectName').value.trim();
+  const desc = document.getElementById('projectDesc').value.trim();
+  const errEl = document.getElementById('projectName-error');
+
+  if (!name) { errEl.textContent = 'مطلوب'; document.getElementById('projectName').classList.add('error'); return; }
+  errEl.textContent = '';
+  document.getElementById('projectName').classList.remove('error');
+
+  projectSubmitBtn.disabled = true;
+  projectSubmitBtn.querySelector('.btn-text').textContent = 'جاري الإضافة...';
+
+  try {
+    const { error } = await window.supabaseClient
+      .from(TABLE_PROJ).insert([{ name, description: desc || null }]);
+    if (error) throw error;
+    projectForm.reset();
+    setStatus(projectFormStatus, '✅ تم إضافة المشروع بنجاح!', 'success');
+    showToast(`تم إضافة "${name}"`);
+    await fetchProjects();
+  } catch (err) {
+    const msg = err.code === '23505' ? '⚠️ اسم المشروع موجود مسبقاً' : `❌ ${err.message}`;
+    setStatus(projectFormStatus, msg, 'error');
+  } finally {
+    projectSubmitBtn.disabled = false;
+    projectSubmitBtn.querySelector('.btn-text').textContent = 'إضافة المشروع';
+  }
+});
+
+// حذف مشروع
+let pendingDeleteId = null;
+function deleteProject(id, name) {
+  pendingDeleteId = id;
+  document.getElementById('confirmMsg').textContent = `هل تريد حذف مشروع "${name}"؟`;
+  document.getElementById('confirmOverlay').classList.remove('hidden');
+}
+document.getElementById('confirmOkBtn').addEventListener('click', async () => {
+  if (!pendingDeleteId) return;
+  closeConfirm();
+  try {
+    const { error } = await window.supabaseClient.from(TABLE_PROJ).delete().eq('id', pendingDeleteId);
+    if (error) throw error;
+    showToast('تم حذف المشروع');
+    await fetchProjects();
+  } catch (err) { showToast('❌ خطأ في الحذف'); }
+  pendingDeleteId = null;
+});
+function closeConfirm() { document.getElementById('confirmOverlay').classList.add('hidden'); }
+
+// ═══════════════════════════════════════════════
+//  EMPLOYEES
+// ═══════════════════════════════════════════════
+async function fetchEmployees() {
+  try {
+    const { data, error } = await window.supabaseClient
+      .from(TABLE_EMP).select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    renderTable(data || []);
+  } catch (err) { console.error(err); renderTable([]); }
+}
+
 function renderTable(rows) {
-  const n = rows.length;
-  recordCount.textContent = n;
-  navCount.textContent = n;
-  if (n === 0) {
+  recordCount.textContent = rows.length;
+  navCount.textContent    = rows.length;
+  if (!rows.length) {
     tableBody.innerHTML = `<tr><td colspan="12"><div class="empty-state">
       <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
       <p>لا توجد سجلات</p></div></td></tr>`;
@@ -99,7 +225,7 @@ function renderTable(rows) {
     <td>${escHtml(r.full_name)}</td>
     <td><span class="dept-tag">${escHtml(r.department)}</span></td>
     <td>${escHtml(r.job_title)}</td>
-    <td>${escHtml(r.project||'—')}</td>
+    <td>${r.project ? `<span class="proj-tag">${escHtml(r.project)}</span>` : '—'}</td>
     <td class="num-td">${r.basic_salary ? Number(r.basic_salary).toLocaleString() : '—'}</td>
     <td class="num-td">${r.total_salary ? Number(r.total_salary).toLocaleString() : '—'}</td>
     <td>${formatDate(r.join_date)}</td>
@@ -109,20 +235,10 @@ function renderTable(rows) {
   </tr>`).join('');
 }
 
-// ─── Fetch ───────────────────────────────────────────────
-async function fetchEmployees() {
-  try {
-    const { data, error } = await window.supabaseClient
-      .from(TABLE_NAME).select('*').order('created_at', { ascending: false });
-    if (error) throw error;
-    renderTable(data || []);
-  } catch (err) { console.error(err); renderTable([]); }
-}
-
-// ─── Submit ──────────────────────────────────────────────
+// إرسال فورم الموظف
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  clearStatus();
+  clearStatus(formStatus);
   if (!validateAll()) return;
 
   const basic = parseFloat(document.getElementById('basicSalary').value) || 0;
@@ -131,7 +247,7 @@ form.addEventListener('submit', async (e) => {
     full_name:        document.getElementById('fullName').value.trim(),
     department:       document.getElementById('department').value,
     job_title:        document.getElementById('jobTitle').value.trim(),
-    project:          document.getElementById('project').value.trim() || null,
+    project:          document.getElementById('project').value || null,
     basic_salary:     basic,
     total_salary:     parseFloat((basic * 1.35).toFixed(2)),
     join_date:        document.getElementById('joinDate').value || null,
@@ -144,41 +260,37 @@ form.addEventListener('submit', async (e) => {
   submitBtn.querySelector('.btn-text').textContent = 'جاري الحفظ...';
 
   try {
-    const { error } = await window.supabaseClient.from(TABLE_NAME).insert([payload]);
+    const { error } = await window.supabaseClient.from(TABLE_EMP).insert([payload]);
     if (error) throw error;
     form.reset();
     document.getElementById('totalSalary').value = '';
     requiredFields.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.remove('error');
+      document.getElementById(id)?.classList.remove('error');
       const err = document.getElementById(`${id}-error`);
       if (err) err.textContent = '';
     });
-    setStatus('✅ تم حفظ بيانات الموظف بنجاح!', 'success');
+    setStatus(formStatus, '✅ تم حفظ بيانات الموظف بنجاح!', 'success');
     showToast('تم حفظ الموظف بنجاح');
     await fetchEmployees();
   } catch (err) {
     const msg = err.code === '23505' ? '⚠️ البريد الإلكتروني مسجل مسبقاً' : `❌ ${err.message}`;
-    setStatus(msg, 'error');
+    setStatus(formStatus, msg, 'error');
   } finally {
     submitBtn.disabled = false;
     submitBtn.querySelector('.btn-text').textContent = 'حفظ الموظف';
   }
 });
 
-// ─── Reset ───────────────────────────────────────────────
 resetBtn.addEventListener('click', () => {
   requiredFields.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('error');
+    document.getElementById(id)?.classList.remove('error');
     const err = document.getElementById(`${id}-error`);
     if (err) err.textContent = '';
   });
   document.getElementById('totalSalary').value = '';
-  clearStatus();
+  clearStatus(formStatus);
 });
 
-// ─── Live validation ─────────────────────────────────────
 requiredFields.forEach(id => {
   const el = document.getElementById(id);
   if (!el) return;
@@ -186,13 +298,10 @@ requiredFields.forEach(id => {
   el.addEventListener('input', () => { if (el.classList.contains('error')) validateField(id, el.value); });
 });
 
-// ─── Init ────────────────────────────────────────────────
-(async () => { await fetchEmployees(); })();
-
 // ─── Export ──────────────────────────────────────────────
 async function exportToExcel() {
   const { data, error } = await window.supabaseClient
-    .from(TABLE_NAME).select('*').order('created_at', { ascending: false });
+    .from(TABLE_EMP).select('*').order('created_at', { ascending: false });
   if (error || !data?.length) { showToast('لا توجد بيانات!'); return; }
 
   const headers = ['#','الكود','الاسم','القسم','المسمى','المشروع','الراتب الأساسي','الراتب الشامل','تاريخ الانضمام','تاريخ الاستقالة','البريد','الهاتف'];
@@ -216,3 +325,8 @@ async function exportToExcel() {
   a.click(); URL.revokeObjectURL(a.href);
   showToast('تم التصدير! ✅');
 }
+
+// ─── Init ────────────────────────────────────────────────
+(async () => {
+  await Promise.all([fetchEmployees(), fetchProjects()]);
+})();
