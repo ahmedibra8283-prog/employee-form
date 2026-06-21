@@ -44,6 +44,26 @@
         <span class="nav-badge" id="navProjCount">0</span>
       </a>
     </nav>
+      <div class="nav-group-label">المشتريات</div>
+      <a class="nav-item" onclick="showTab('pr-form', this)">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+        <span>تسجيل طلب شراء</span>
+      </a>
+      <a class="nav-item" onclick="showTab('pr-list', this)">
+        <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+        <span>قائمة طلبات الشراء</span>
+        <span class="nav-badge" id="navPRCount">0</span>
+      </a>
+      <a class="nav-item" onclick="showTab('po-form', this)">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+        <span>تسجيل أمر شراء</span>
+      </a>
+      <a class="nav-item" onclick="showTab('po-list', this)">
+        <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+        <span>قائمة أوامر الشراء</span>
+        <span class="nav-badge" id="navPOCount">0</span>
+      </a>
+
       <div class="nav-group-label">Tools</div>
       <a class="nav-item" onclick="showTab('bpo-tool', this)">
         <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
@@ -244,6 +264,185 @@
       </div>
     </div>
 
+
+    <!-- ─── TAB: تسجيل طلب شراء ─── -->
+    <div class="tab-panel" id="tab-pr-form">
+      <div class="page-header">
+        <div><h1 class="page-title">تسجيل طلب شراء جديد</h1><p class="page-sub">أدخل بيانات طلب الشراء</p></div>
+      </div>
+      <form id="prForm" novalidate>
+        <div class="form-sections">
+          <div class="form-section">
+            <div class="section-header"><span class="section-num">١</span><span>بيانات الطلب</span></div>
+            <div class="fields-row">
+              <div class="field sm"><label>Business Unit</label><input type="text" id="pr_business_unit" placeholder="BU-001" /></div>
+              <div class="field sm"><label>Cost Code</label><input type="text" id="pr_cost_code" placeholder="CC-001" /></div>
+              <div class="field sm"><label>PR Number <span class="req">*</span></label><input type="text" id="pr_number" placeholder="PR-001" required /><span class="ferr" id="pr_number-error"></span></div>
+              <div class="field sm"><label>Line Number</label><input type="text" id="pr_line_number" placeholder="1" /></div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="section-header"><span class="section-num">٢</span><span>بيانات الصنف</span></div>
+            <div class="fields-row">
+              <div class="field sm"><label>Item Code</label><input type="text" id="pr_item_code" placeholder="ITM-001" /></div>
+              <div class="field"><label>Item Description</label><input type="text" id="pr_item_description" placeholder="وصف الصنف" /></div>
+              <div class="field sm"><label>UOM</label><input type="text" id="pr_uom" placeholder="EA / KG / M" /></div>
+              <div class="field sm"><label>Category Description</label><input type="text" id="pr_category_description" placeholder="الفئة" /></div>
+            </div>
+            <div class="fields-row">
+              <div class="field sm"><label>Ordered Quantity</label><input type="number" id="pr_ordered_quantity" placeholder="0" min="0" /></div>
+              <div class="field sm"><label>Unit Price</label><input type="number" id="pr_unit_price" placeholder="0.00" min="0" /></div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="section-header"><span class="section-num">٣</span><span>التواريخ والموافقة</span></div>
+            <div class="fields-row">
+              <div class="field sm"><label>Creation Date</label><input type="date" id="pr_creation_date" /></div>
+              <div class="field sm"><label>Approval Date</label><input type="date" id="pr_approval_date" /></div>
+              <div class="field sm"><label>Source</label><input type="text" id="pr_source" placeholder="المصدر" /></div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="section-header"><span class="section-num">٤</span><span>التفاصيل الإضافية</span></div>
+            <div class="fields-row">
+              <div class="field"><label>Justification</label><input type="text" id="pr_justification" placeholder="مبرر الطلب" /></div>
+              <div class="field sm"><label>Bill to Location</label><input type="text" id="pr_bill_to_location" placeholder="موقع الفاتورة" /></div>
+              <div class="field sm"><label>Deliver to Location</label><input type="text" id="pr_deliver_to_location" placeholder="موقع التسليم" /></div>
+              <div class="field sm"><label>GL Accounts</label><input type="text" id="pr_gl_accounts" placeholder="الحساب" /></div>
+            </div>
+          </div>
+        </div>
+        <div id="prFormStatus" class="form-status hidden"></div>
+        <div class="form-actions">
+          <button type="reset" class="btn btn-ghost" id="resetPRBtn">مسح</button>
+          <button type="submit" class="btn btn-primary" id="prSubmitBtn"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><span class="btn-text">حفظ الطلب</span></button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ─── TAB: قائمة طلبات الشراء ─── -->
+    <div class="tab-panel" id="tab-pr-list">
+      <div class="page-header">
+        <div><h1 class="page-title">قائمة طلبات الشراء</h1><p class="page-sub"><span id="prCount">0</span> طلب مسجل</p></div>
+        <button class="btn btn-export" onclick="exportPRToExcel()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>تصدير Excel</button>
+      </div>
+      <div class="table-card"><div class="table-scroll">
+        <table><thead><tr>
+          <th>#</th><th>PR Number</th><th>Line</th><th>Business Unit</th><th>Cost Code</th>
+          <th>Item Code</th><th>Item Description</th><th>UOM</th><th>Category</th>
+          <th>Qty</th><th>Unit Price</th><th>Creation Date</th><th>Approval Date</th>
+          <th>Source</th><th>Bill To</th><th>Deliver To</th><th>GL Accounts</th><th>حذف</th>
+        </tr></thead>
+        <tbody id="prTableBody"><tr><td colspan="18"><div class="empty-state">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+          <p>لا توجد طلبات شراء بعد</p></div></td></tr></tbody>
+        </table>
+      </div></div>
+    </div>
+
+    <!-- ─── TAB: تسجيل أمر شراء ─── -->
+    <div class="tab-panel" id="tab-po-form">
+      <div class="page-header">
+        <div><h1 class="page-title">تسجيل أمر شراء جديد</h1><p class="page-sub">أدخل بيانات أمر الشراء</p></div>
+      </div>
+      <form id="poForm" novalidate>
+        <div class="form-sections">
+          <div class="form-section">
+            <div class="section-header"><span class="section-num">١</span><span>بيانات الأمر</span></div>
+            <div class="fields-row">
+              <div class="field sm"><label>Business Unit</label><input type="text" id="po_business_unit" placeholder="BU-001" /></div>
+              <div class="field sm"><label>Cost Code</label><input type="text" id="po_cost_code" placeholder="CC-001" /></div>
+              <div class="field sm"><label>PO Number <span class="req">*</span></label><input type="text" id="po_number" placeholder="PO-001" required /><span class="ferr" id="po_number-error"></span></div>
+              <div class="field sm"><label>PO Line Number</label><input type="text" id="po_line_number" placeholder="1" /></div>
+            </div>
+            <div class="fields-row">
+              <div class="field sm">
+                <label>Direct PO؟</label>
+                <div style="display:flex;align-items:center;gap:8px;padding:8px 0;">
+                  <input type="checkbox" id="po_is_direct" onchange="togglePRField()" style="width:18px;height:18px;cursor:pointer;" />
+                  <label for="po_is_direct" style="font-weight:400;color:var(--text2);cursor:pointer;">نعم — Direct PO</label>
+                </div>
+              </div>
+              <div class="field sm" id="pr_ref_field">
+                <label>PR Number <span class="note">(مرتبط بطلب شراء)</span></label>
+                <div class="sel-wrap">
+                  <select id="po_pr_number">
+                    <option value="">اختر طلب الشراء</option>
+                  </select>
+                  <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                </div>
+              </div>
+              <div class="field sm"><label>PR Line Number</label><input type="text" id="po_pr_line_number" placeholder="1" /></div>
+              <div class="field sm"><label>Line Status</label><input type="text" id="po_line_status" placeholder="Open / Closed" /></div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="section-header"><span class="section-num">٢</span><span>بيانات الصنف</span></div>
+            <div class="fields-row">
+              <div class="field sm"><label>Item Code</label><input type="text" id="po_item_code" placeholder="ITM-001" /></div>
+              <div class="field"><label>Item Description</label><input type="text" id="po_item_description" placeholder="وصف الصنف" /></div>
+              <div class="field sm"><label>UOM</label><input type="text" id="po_uom" placeholder="EA / KG / M" /></div>
+              <div class="field sm"><label>Category Description</label><input type="text" id="po_category_description" placeholder="الفئة" /></div>
+            </div>
+            <div class="fields-row">
+              <div class="field sm"><label>Ordered Quantity</label><input type="number" id="po_ordered_quantity" placeholder="0" min="0" /></div>
+              <div class="field sm"><label>Unit Price</label><input type="number" id="po_unit_price" placeholder="0.00" min="0" /></div>
+              <div class="field sm"><label>PO Amount</label><input type="number" id="po_amount" placeholder="0.00" readonly /></div>
+              <div class="field sm"><label>Received Quantity</label><input type="number" id="po_received_quantity" placeholder="0" min="0" /></div>
+              <div class="field sm"><label>Received Amount</label><input type="number" id="po_received_amount" placeholder="0.00" min="0" /></div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="section-header"><span class="section-num">٣</span><span>المورد</span></div>
+            <div class="fields-row">
+              <div class="field"><label>Supplier Name</label><input type="text" id="po_supplier_name" placeholder="اسم المورد" /></div>
+              <div class="field sm"><label>Supplier Payment Terms</label><input type="text" id="po_supplier_payment_terms" placeholder="شروط الدفع" /></div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="section-header"><span class="section-num">٤</span><span>التواريخ والتفاصيل</span></div>
+            <div class="fields-row">
+              <div class="field sm"><label>Creation Date</label><input type="date" id="po_creation_date" /></div>
+              <div class="field sm"><label>Approval Date</label><input type="date" id="po_approval_date" /></div>
+              <div class="field sm"><label>Source</label><input type="text" id="po_source" placeholder="المصدر" /></div>
+              <div class="field"><label>Justification</label><input type="text" id="po_justification" placeholder="المبرر" /></div>
+            </div>
+            <div class="fields-row">
+              <div class="field sm"><label>Bill to Location</label><input type="text" id="po_bill_to_location" placeholder="موقع الفاتورة" /></div>
+              <div class="field sm"><label>Deliver to Location</label><input type="text" id="po_deliver_to_location" placeholder="موقع التسليم" /></div>
+              <div class="field sm"><label>GL Accounts</label><input type="text" id="po_gl_accounts" placeholder="الحساب" /></div>
+            </div>
+          </div>
+        </div>
+        <div id="poFormStatus" class="form-status hidden"></div>
+        <div class="form-actions">
+          <button type="reset" class="btn btn-ghost" id="resetPOBtn">مسح</button>
+          <button type="submit" class="btn btn-primary" id="poSubmitBtn"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><span class="btn-text">حفظ الأمر</span></button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ─── TAB: قائمة أوامر الشراء ─── -->
+    <div class="tab-panel" id="tab-po-list">
+      <div class="page-header">
+        <div><h1 class="page-title">قائمة أوامر الشراء</h1><p class="page-sub"><span id="poCount">0</span> أمر مسجل</p></div>
+        <button class="btn btn-export" onclick="exportPOToExcel()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>تصدير Excel</button>
+      </div>
+      <div class="table-card"><div class="table-scroll">
+        <table><thead><tr>
+          <th>#</th><th>PO Number</th><th>PO Line</th><th>PR Number</th><th>Direct PO</th>
+          <th>Business Unit</th><th>Cost Code</th><th>Item Code</th><th>Item Description</th>
+          <th>Supplier</th><th>UOM</th><th>Status</th><th>Ordered Qty</th>
+          <th>Unit Price</th><th>PO Amount</th><th>Received Qty</th><th>Received Amount</th>
+          <th>Creation Date</th><th>Approval Date</th><th>Payment Terms</th>
+          <th>Bill To</th><th>Deliver To</th><th>GL Accounts</th><th>حذف</th>
+        </tr></thead>
+        <tbody id="poTableBody"><tr><td colspan="24"><div class="empty-state">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+          <p>لا توجد أوامر شراء بعد</p></div></td></tr></tbody>
+        </table>
+      </div></div>
+    </div>
   </main>
 </div>
 
