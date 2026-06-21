@@ -301,10 +301,17 @@ document.getElementById('confirmOkBtn').addEventListener('click', async () => {
   if (!pendingDelete) return;
   closeConfirm();
   try {
-    const { error } = await window.supabaseClient.from(pendingDelete.type==='project'?TABLE_PROJ:TABLE_EMP).delete().eq('id', pendingDelete.id);
+    let table, refreshFn;
+    switch(pendingDelete.type) {
+      case 'project': table = TABLE_PROJ; refreshFn = fetchProjects; break;
+      case 'pr':      table = TABLE_PR;   refreshFn = fetchPRsFull;  break;
+      case 'po':      table = TABLE_PO;   refreshFn = fetchPOs;      break;
+      default:        table = TABLE_EMP;  refreshFn = fetchEmployees;
+    }
+    const { error } = await window.supabaseClient.from(table).delete().eq('id', pendingDelete.id);
     if (error) throw error;
     showToast('تم الحذف بنجاح');
-    if (pendingDelete.type==='project') await fetchProjects(); else await fetchEmployees();
+    await refreshFn();
   } catch { showToast('❌ خطأ في الحذف'); }
   pendingDelete = null;
 });
@@ -402,3 +409,301 @@ function exportBPOToExcel() {
   a.click();URL.revokeObjectURL(a.href);
   showToast('تم التصدير! ✅');
 }
+
+// ══════════════════════════════════════════════
+//  PURCHASE REQUESTS (PR)
+// ══════════════════════════════════════════════
+const TABLE_PR = 'purchase_requests';
+const TABLE_PO = 'purchase_orders';
+
+// Auto calc PO Amount
+document.getElementById('po_ordered_quantity').addEventListener('input', calcPOAmount);
+document.getElementById('po_unit_price').addEventListener('input', calcPOAmount);
+function calcPOAmount() {
+  const qty   = parseFloat(document.getElementById('po_ordered_quantity').value) || 0;
+  const price = parseFloat(document.getElementById('po_unit_price').value) || 0;
+  document.getElementById('po_amount').value = qty > 0 && price > 0 ? (qty * price).toFixed(2) : '';
+}
+
+// Toggle PR field based on Direct PO checkbox
+function togglePRField() {
+  const isDirect = document.getElementById('po_is_direct').checked;
+  document.getElementById('pr_ref_field').style.opacity = isDirect ? '0.3' : '1';
+  document.getElementById('po_pr_number').disabled = isDirect;
+  if (isDirect) document.getElementById('po_pr_number').value = '';
+}
+
+// Fetch PRs and populate dropdown in PO form
+async function fetchPRs() {
+  try {
+    const { data, error } = await window.supabaseClient.from(TABLE_PR).select('pr_number, item_description').order('pr_number');
+    if (error) throw error;
+    const rows = data || [];
+    const navBadge = document.getElementById('navPRCount');
+    const prCount  = document.getElementById('prCount');
+    if (navBadge) navBadge.textContent = rows.length;
+    if (prCount)  prCount.textContent  = rows.length;
+
+    const sel = document.getElementById('po_pr_number');
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">اختر طلب الشراء</option>';
+    rows.forEach(r => {
+      const o = document.createElement('option');
+      o.value = r.pr_number;
+      o.textContent = `${r.pr_number}${r.item_description ? ' — ' + r.item_description : ''}`;
+      if (r.pr_number === cur) o.selected = true;
+      sel.appendChild(o);
+    });
+
+    renderPRTable(rows);
+  } catch (err) { console.error(err); }
+}
+
+async function fetchPRsFull() {
+  try {
+    const { data, error } = await window.supabaseClient.from(TABLE_PR).select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    const rows = data || [];
+    const navBadge = document.getElementById('navPRCount');
+    const prCount  = document.getElementById('prCount');
+    if (navBadge) navBadge.textContent = rows.length;
+    if (prCount)  prCount.textContent  = rows.length;
+    renderPRTable(rows);
+    // update dropdown
+    const sel = document.getElementById('po_pr_number');
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">اختر طلب الشراء</option>';
+    rows.forEach(r => {
+      const o = document.createElement('option');
+      o.value = r.pr_number;
+      o.textContent = `${r.pr_number}${r.item_description ? ' — ' + r.item_description : ''}`;
+      if (r.pr_number === cur) o.selected = true;
+      sel.appendChild(o);
+    });
+  } catch (err) { console.error(err); }
+}
+
+function renderPRTable(rows) {
+  const tbody = document.getElementById('prTableBody');
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="18"><div class="empty-state">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+      <p>لا توجد طلبات شراء بعد</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map((r, i) => `<tr>
+    <td>${i+1}</td>
+    <td><span class="code-tag">${escHtml(r.pr_number||'—')}</span></td>
+    <td>${escHtml(r.line_number||'—')}</td>
+    <td>${escHtml(r.business_unit||'—')}</td>
+    <td>${escHtml(r.cost_code||'—')}</td>
+    <td>${escHtml(r.item_code||'—')}</td>
+    <td>${escHtml(r.item_description||'—')}</td>
+    <td>${escHtml(r.uom||'—')}</td>
+    <td>${escHtml(r.category_description||'—')}</td>
+    <td class="num-td">${fNum(r.ordered_quantity)}</td>
+    <td class="num-td">${fNum(r.unit_price)}</td>
+    <td>${formatDate(r.creation_date)}</td>
+    <td>${formatDate(r.approval_date)}</td>
+    <td>${escHtml(r.source||'—')}</td>
+    <td>${escHtml(r.bill_to_location||'—')}</td>
+    <td>${escHtml(r.deliver_to_location||'—')}</td>
+    <td>${escHtml(r.gl_accounts||'—')}</td>
+    <td><button class="btn-del" onclick="confirmDelete('${r.id}','${escHtml(r.pr_number)}','pr')">
+      <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+    </button></td>
+  </tr>`).join('');
+}
+
+// Submit PR Form
+document.getElementById('prForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const prNum = document.getElementById('pr_number').value.trim();
+  const errEl = document.getElementById('pr_number-error');
+  if (!prNum) { errEl.textContent = 'مطلوب'; document.getElementById('pr_number').classList.add('error'); return; }
+  errEl.textContent = ''; document.getElementById('pr_number').classList.remove('error');
+
+  const btn = document.getElementById('prSubmitBtn');
+  btn.disabled = true; btn.querySelector('.btn-text').textContent = 'جاري الحفظ...';
+
+  const payload = {
+    pr_number: prNum,
+    line_number: document.getElementById('pr_line_number').value.trim() || null,
+    business_unit: document.getElementById('pr_business_unit').value.trim() || null,
+    cost_code: document.getElementById('pr_cost_code').value.trim() || null,
+    item_code: document.getElementById('pr_item_code').value.trim() || null,
+    item_description: document.getElementById('pr_item_description').value.trim() || null,
+    uom: document.getElementById('pr_uom').value.trim() || null,
+    category_description: document.getElementById('pr_category_description').value.trim() || null,
+    ordered_quantity: parseFloat(document.getElementById('pr_ordered_quantity').value) || null,
+    unit_price: parseFloat(document.getElementById('pr_unit_price').value) || null,
+    creation_date: document.getElementById('pr_creation_date').value || null,
+    approval_date: document.getElementById('pr_approval_date').value || null,
+    source: document.getElementById('pr_source').value.trim() || null,
+    justification: document.getElementById('pr_justification').value.trim() || null,
+    bill_to_location: document.getElementById('pr_bill_to_location').value.trim() || null,
+    deliver_to_location: document.getElementById('pr_deliver_to_location').value.trim() || null,
+    gl_accounts: document.getElementById('pr_gl_accounts').value.trim() || null,
+  };
+
+  try {
+    const { error } = await window.supabaseClient.from(TABLE_PR).insert([payload]);
+    if (error) throw error;
+    document.getElementById('prForm').reset();
+    setStatus(document.getElementById('prFormStatus'), '✅ تم حفظ طلب الشراء بنجاح!', 'success');
+    showToast(`تم إضافة ${prNum}`);
+    await fetchPRsFull();
+  } catch (err) {
+    const msg = err.code === '23505' ? '⚠️ رقم الطلب موجود مسبقاً' : `❌ ${err.message}`;
+    setStatus(document.getElementById('prFormStatus'), msg, 'error');
+  } finally {
+    btn.disabled = false; btn.querySelector('.btn-text').textContent = 'حفظ الطلب';
+  }
+});
+
+document.getElementById('resetPRBtn').addEventListener('click', () => {
+  document.getElementById('pr_number').classList.remove('error');
+  document.getElementById('pr_number-error').textContent = '';
+  clearStatus(document.getElementById('prFormStatus'));
+});
+
+// ══════════════════════════════════════════════
+//  PURCHASE ORDERS (PO)
+// ══════════════════════════════════════════════
+async function fetchPOs() {
+  try {
+    const { data, error } = await window.supabaseClient.from(TABLE_PO).select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    const rows = data || [];
+    const navBadge = document.getElementById('navPOCount');
+    const poCount  = document.getElementById('poCount');
+    if (navBadge) navBadge.textContent = rows.length;
+    if (poCount)  poCount.textContent  = rows.length;
+    renderPOTable(rows);
+  } catch (err) { console.error(err); }
+}
+
+function renderPOTable(rows) {
+  const tbody = document.getElementById('poTableBody');
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="24"><div class="empty-state">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+      <p>لا توجد أوامر شراء بعد</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map((r, i) => `<tr>
+    <td>${i+1}</td>
+    <td><span class="code-tag">${escHtml(r.po_number||'—')}</span></td>
+    <td>${escHtml(r.po_line_number||'—')}</td>
+    <td>${r.pr_number?`<span class="proj-tag">${escHtml(r.pr_number)}</span>`:'—'}</td>
+    <td>${r.is_direct_po?'<span class="active-tag">Direct</span>':'—'}</td>
+    <td>${escHtml(r.business_unit||'—')}</td>
+    <td>${escHtml(r.cost_code||'—')}</td>
+    <td>${escHtml(r.item_code||'—')}</td>
+    <td>${escHtml(r.item_description||'—')}</td>
+    <td>${escHtml(r.supplier_name||'—')}</td>
+    <td>${escHtml(r.uom||'—')}</td>
+    <td>${escHtml(r.line_status||'—')}</td>
+    <td class="num-td">${fNum(r.ordered_quantity)}</td>
+    <td class="num-td">${fNum(r.unit_price)}</td>
+    <td class="num-td">${fNum(r.po_amount)}</td>
+    <td class="num-td">${fNum(r.received_quantity)}</td>
+    <td class="num-td">${fNum(r.received_amount)}</td>
+    <td>${formatDate(r.creation_date)}</td>
+    <td>${formatDate(r.approval_date)}</td>
+    <td>${escHtml(r.supplier_payment_terms||'—')}</td>
+    <td>${escHtml(r.bill_to_location||'—')}</td>
+    <td>${escHtml(r.deliver_to_location||'—')}</td>
+    <td>${escHtml(r.gl_accounts||'—')}</td>
+    <td><button class="btn-del" onclick="confirmDelete('${r.id}','${escHtml(r.po_number)}','po')">
+      <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+    </button></td>
+  </tr>`).join('');
+}
+
+// Submit PO Form
+document.getElementById('poForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const poNum = document.getElementById('po_number').value.trim();
+  const errEl = document.getElementById('po_number-error');
+  if (!poNum) { errEl.textContent = 'مطلوب'; document.getElementById('po_number').classList.add('error'); return; }
+  errEl.textContent = ''; document.getElementById('po_number').classList.remove('error');
+
+  const isDirect = document.getElementById('po_is_direct').checked;
+  const btn = document.getElementById('poSubmitBtn');
+  btn.disabled = true; btn.querySelector('.btn-text').textContent = 'جاري الحفظ...';
+
+  const qty   = parseFloat(document.getElementById('po_ordered_quantity').value) || null;
+  const price = parseFloat(document.getElementById('po_unit_price').value) || null;
+
+  const payload = {
+    po_number: poNum,
+    po_line_number: document.getElementById('po_line_number').value.trim() || null,
+    is_direct_po: isDirect,
+    pr_number: isDirect ? null : (document.getElementById('po_pr_number').value || null),
+    pr_line_number: document.getElementById('po_pr_line_number').value.trim() || null,
+    business_unit: document.getElementById('po_business_unit').value.trim() || null,
+    cost_code: document.getElementById('po_cost_code').value.trim() || null,
+    item_code: document.getElementById('po_item_code').value.trim() || null,
+    item_description: document.getElementById('po_item_description').value.trim() || null,
+    supplier_name: document.getElementById('po_supplier_name').value.trim() || null,
+    uom: document.getElementById('po_uom').value.trim() || null,
+    line_status: document.getElementById('po_line_status').value.trim() || null,
+    ordered_quantity: qty,
+    unit_price: price,
+    po_amount: qty && price ? parseFloat((qty * price).toFixed(2)) : null,
+    category_description: document.getElementById('po_category_description').value.trim() || null,
+    received_quantity: parseFloat(document.getElementById('po_received_quantity').value) || null,
+    received_amount: parseFloat(document.getElementById('po_received_amount').value) || null,
+    creation_date: document.getElementById('po_creation_date').value || null,
+    approval_date: document.getElementById('po_approval_date').value || null,
+    source: document.getElementById('po_source').value.trim() || null,
+    justification: document.getElementById('po_justification').value.trim() || null,
+    supplier_payment_terms: document.getElementById('po_supplier_payment_terms').value.trim() || null,
+    bill_to_location: document.getElementById('po_bill_to_location').value.trim() || null,
+    deliver_to_location: document.getElementById('po_deliver_to_location').value.trim() || null,
+    gl_accounts: document.getElementById('po_gl_accounts').value.trim() || null,
+  };
+
+  try {
+    const { error } = await window.supabaseClient.from(TABLE_PO).insert([payload]);
+    if (error) throw error;
+    document.getElementById('poForm').reset();
+    document.getElementById('po_amount').value = '';
+    togglePRField();
+    setStatus(document.getElementById('poFormStatus'), '✅ تم حفظ أمر الشراء بنجاح!', 'success');
+    showToast(`تم إضافة ${poNum}`);
+    await fetchPOs();
+  } catch (err) {
+    const msg = err.code === '23505' ? '⚠️ رقم الأمر موجود مسبقاً' : `❌ ${err.message}`;
+    setStatus(document.getElementById('poFormStatus'), msg, 'error');
+  } finally {
+    btn.disabled = false; btn.querySelector('.btn-text').textContent = 'حفظ الأمر';
+  }
+});
+
+document.getElementById('resetPOBtn').addEventListener('click', () => {
+  document.getElementById('po_number').classList.remove('error');
+  document.getElementById('po_number-error').textContent = '';
+  document.getElementById('po_amount').value = '';
+  clearStatus(document.getElementById('poFormStatus'));
+});
+
+// Export PR
+async function exportPRToExcel() {
+  const { data } = await window.supabaseClient.from(TABLE_PR).select('*').order('created_at', {ascending:false});
+  if (!data?.length) { showToast('لا توجد بيانات!'); return; }
+  const headers = ['#','PR Number','Line','Business Unit','Cost Code','Item Code','Item Description','UOM','Category','Ordered Qty','Unit Price','Creation Date','Approval Date','Source','Justification','Bill To','Deliver To','GL Accounts'];
+  buildExcel(headers, data.map((r,i)=>[i+1,r.pr_number||'—',r.line_number||'—',r.business_unit||'—',r.cost_code||'—',r.item_code||'—',r.item_description||'—',r.uom||'—',r.category_description||'—',fNum(r.ordered_quantity),fNum(r.unit_price),formatDate(r.creation_date),formatDate(r.approval_date),r.source||'—',r.justification||'—',r.bill_to_location||'—',r.deliver_to_location||'—',r.gl_accounts||'—']), 'purchase_requests.xls', 'طلبات الشراء');
+}
+
+// Export PO
+async function exportPOToExcel() {
+  const { data } = await window.supabaseClient.from(TABLE_PO).select('*').order('created_at', {ascending:false});
+  if (!data?.length) { showToast('لا توجد بيانات!'); return; }
+  const headers = ['#','PO Number','PO Line','PR Number','Direct PO','Business Unit','Cost Code','Item Code','Item Description','Supplier','UOM','Status','Ordered Qty','Unit Price','PO Amount','Received Qty','Received Amount','Creation Date','Approval Date','Payment Terms','Bill To','Deliver To','GL Accounts'];
+  buildExcel(headers, data.map((r,i)=>[i+1,r.po_number||'—',r.po_line_number||'—',r.pr_number||'—',r.is_direct_po?'Yes':'No',r.business_unit||'—',r.cost_code||'—',r.item_code||'—',r.item_description||'—',r.supplier_name||'—',r.uom||'—',r.line_status||'—',fNum(r.ordered_quantity),fNum(r.unit_price),fNum(r.po_amount),fNum(r.received_quantity),fNum(r.received_amount),formatDate(r.creation_date),formatDate(r.approval_date),r.supplier_payment_terms||'—',r.bill_to_location||'—',r.deliver_to_location||'—',r.gl_accounts||'—']), 'purchase_orders.xls', 'أوامر الشراء');
+}
+
+// Init PR and PO
+(async () => { await Promise.all([fetchPRsFull(), fetchPOs()]); })();
