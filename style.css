@@ -485,3 +485,38 @@ tbody td:first-child { color: var(--muted); font-weight: 700; font-size: .7rem; 
   padding: 14px 12px 4px;
   margin-top: 4px;
 }
+
+/* ═══ EXTRA FIELD SIZES ═══ */
+.field.xs { flex: 0 0 120px; min-width: 100px; }
+
+/* ═══ TEXTAREA ═══ */
+.textarea-field {
+  width: 100%;
+  padding: 8px 11px;
+  font-family: 'Cairo', sans-serif;
+  font-size: .82rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  resize: vertical;
+  outline: none;
+  direction: rtl;
+  color: var(--text);
+  transition: border-color var(--tr), box-shadow var(--tr);
+}
+.textarea-field:focus {
+  border-color: var(--gold);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(201,168,76,.12);
+}
+
+/* ═══ PROGRESS BADGE ═══ */
+.progress-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(61,153,112,.1);
+  color: #2E7D55;
+  border-radius: 4px;
+  font-size: .7rem;
+  font-weight: 700;
+}
