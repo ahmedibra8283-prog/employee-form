@@ -400,13 +400,16 @@ function exportBPOToExcel() {
   const lineArr = lines.split('\n').filter(Boolean);
   const maxLen  = Math.max(numArr.length, lineArr.length);
 
-  const rows = Array.from({length: maxLen}, (_, i) => [numArr[i]||'', lineArr[i]||'']);
-  const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const hRow = ['Numbers','Lines'].map(h=>`<th style="background:#1E3A5F;color:#fff;font-weight:bold;padding:8px;border:1px solid #fff;text-align:center;white-space:nowrap;">${h}</th>`).join('');
-  const dRows = rows.map((r,i)=>{const bg=i%2===0?'#F7F9FC':'#fff';return`<tr><td style="background:${bg};padding:6px 10px;border:1px solid #D4E0EF;text-align:left;font-family:monospace;white-space:nowrap;">${esc(r[0])}</td><td style="background:${bg};padding:6px 10px;border:1px solid #D4E0EF;text-align:left;white-space:nowrap;">${esc(r[1])}</td></tr>`;}).join('');
-  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>BPO Numbers</x:Name></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table style="border-collapse:collapse;font-family:Arial;"><thead><tr>${hRow}</tr></thead><tbody>${dRows}</tbody></table></body></html>`;
-  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob(['﻿'+html],{type:'application/vnd.ms-excel;charset=utf-8'})),download:'BPO_Numbers.xls'});
-  a.click();URL.revokeObjectURL(a.href);
+  // Use SheetJS for proper xlsx
+  const wsData = [['Numbers', 'Lines']];
+  for (let i = 0; i < maxLen; i++) {
+    wsData.push([numArr[i] || '', lineArr[i] || '']);
+  }
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols'] = [{ wch: 20 }, { wch: 80 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'BPO Numbers');
+  XLSX.writeFile(wb, 'BPO_Numbers.xlsx');
   showToast('تم التصدير! ✅');
 }
 
