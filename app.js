@@ -390,21 +390,16 @@ function copyBPO(elId, label) {
 function exportBPOToExcel() {
   const inputText = document.getElementById('bpoInput').value.trim();
   if (!inputText) { showToast('الصق النص أولاً!'); return; }
-  extractBPO();
 
-  const numbers = document.getElementById('bpoOutput').value;
-  const lines   = document.getElementById('poOutput').value;
-  if (!numbers || numbers === 'No numbers found.') { showToast('لم يتم العثور على أرقام!'); return; }
+  const result = extractBPO();
+  if (!result || !result.nums.length) { showToast('لم يتم العثور على أرقام!'); return; }
 
-  const numArr  = numbers.split('\n').filter(Boolean);
-  const lineArr = lines.split('\n').filter(Boolean);
-  const maxLen  = Math.max(numArr.length, lineArr.length);
-
-  // Use SheetJS for proper xlsx
+  const maxLen = Math.max(result.nums.length, result.lines.length);
   const wsData = [['Numbers', 'Lines']];
   for (let i = 0; i < maxLen; i++) {
-    wsData.push([numArr[i] || '', lineArr[i] || '']);
+    wsData.push([result.nums[i] || '', result.lines[i] || '']);
   }
+
   const ws = XLSX.utils.aoa_to_sheet(wsData);
   ws['!cols'] = [{ wch: 20 }, { wch: 80 }];
   const wb = XLSX.utils.book_new();
